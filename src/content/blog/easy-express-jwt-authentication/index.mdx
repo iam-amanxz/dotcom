@@ -1,0 +1,600 @@
+---
+title: JWT Authentication with Express
+date: 2022-02-03
+category: Web Development
+tags: [express, jwt, nodejs]
+read_time: 11 min
+cover_image: ./cover.webp
+excerpt:  Learn how to implement a simple JWT token based authentication system in your Express app.
+card_color: "#6EE7B7"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+In today's tutorial, we will be learning how to create a simple JWT
+authentication system with Express. I assume you have a little bit of knowledge
+of Express, Node.js, and JWT to follow along.
+
+### Creating a Node project
+
+Let's start by creating a new Node project. Head over to the terminal and
+navigate to the directory you want to create the project in. Then run the
+following commands to create a new folder and initiate a node project with
+default settings. This will generate a `package.json` file in the root directory
+of the project.
+
+> You can use your own project name instead of `express-jwt-authentication` if
+> you wish.
+
+```bash
+mkdir express-jwt-authentication
+cd express-jwt-authentication
+npm init -y
+```
+
+### Installing the dependencies
+
+Now we can install the following dependencies we need for our project.
+
+- [express](https://www.npmjs.com/package/express) - Express web framework
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - We will use this
+  library to create and verify JWT tokens
+
+Run the following command in your terminal to install the dependencies:
+
+```bash
+npm install express jsonwebtoken dotenv --save
+```
+
+#### Additional development setup
+
+To make our lives easier, let's do some additional development setup.
+
+We will install `nodemon` globally to auto restart our web server whenever we
+make changes to our code. We will also add a development script to our
+package.json file to run our server when we run `npm dev`.
+
+> You don't have to run this command if you have already installed nodemon
+> globally on your machine.
+
+```bash
+npm install -g nodemon
+```
+
+Now your `package.json` file should look like this:
+
+```json
+{
+  "name": "express-jwt-authentication",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
+```
+
+Delete the `test` script and add the following script to your `package.json`
+file
+
+```json
+"scripts": {
+  "dev": "nodemon index.js"
+}
+```
+
+With that step, we are ready to start developing.
+
+### Creating the server
+
+Create a new file called `index.js` in the root directory of your project. and
+add the following code:
+
+```js
+const express = require('express')
+
+const app = express()
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen('3000', () => {
+  console.log('server is running on port 3000')
+})
+```
+
+Then start the server by running the following command in your terminal:
+
+```bash
+npm run dev
+```
+
+Now you can see `nodemon` in action. This will start our server on port 3000.
+
+{/* <BlogImage src="/blog-images/nodemon-logs.webp" alt="nodemon logs" /> */}
+
+Now if we send a GET request to `http://localhost:3000` we should get the text
+`Hello World!`. Let's test it out by sending a `curl` request on the terminal.
+
+> If you want to use an HTTP client like Postman, you can do that too.
+
+```
+curl http://localhost:3000
+Hello World!
+```
+
+If you see the same, great! our server works as expected.
+
+### Creating the authentication endpoints
+
+It's time to create the authentication endpoints that we will use to register
+and login the users.
+
+First we will create our registration endpoint. Delete the Hello World endpoint
+we no longer need and replace it with the following code:
+
+```js
+app.post('/register', (req, res) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).send('Email and password are required')
+  }
+
+  const registered = users.find((user) => user.email === email)
+  if (registered) {
+    return res.status(409).send({ error: 'User already exists' })
+  }
+
+  const user = { email, password }
+  users.push(user)
+
+  const accessToken = jwt.sign({ sub: email }, 'MY_JWT_SECRET_KEY')
+
+  res.status(201).json({ accessToken })
+})
+```
+
+That was a lot of code. Let's tackle it piece by piece.
+
+```js
+app.post('/register', (req, res) => {
+```
+
+Here we are saying that if we receive a POST request to the `/register`
+endpoint, execute the following code.
+
+```js
+const { email, password } = req.body
+
+if (!email || !password) {
+  return res.status(400).json('Email and password are required')
+}
+```
+
+Here in line 1, we are doing a bit of ES6 destructuring and extracting the email
+and password from the request body.
+
+Then we are checking if the email and password are provided in the request body.
+If not we are returning a `400 - Bad Request` status code and sending an error
+message to the user.
+
+```js
+const registered = users.find((user) => user.email === email)
+
+if (registered) {
+  return res.status(409).send({ error: 'User already exists' })
+}
+```
+
+Next, we are checking if the user is already registered by checking if the email
+is present in our database. If so, we are returning a `409 - Conflict` status
+code and sending an error message to the user.
+
+Now, you might be wondering from where did the `users` array come from? Well,
+this is the mock in-memory database that we will define in a bit. You can
+imagine this coming from a real database like MongoDB or PostgreSQL. I am using
+an in-memory database for simplicity.
+
+```js
+const user = { email, password }
+users.push(user)
+```
+
+Here, if the user is not registered, we are creating a user object and adding it
+to our in-memory database.
+
+> For simplicity’s sake, we are not hashing the password here. But if you are
+> developing a production-grade application, always hash the password before
+> storing it in the database.
+
+```js
+const accessToken = jwt.sign({ sub: email }, 'MY_JWT_SECRET_KEY')
+
+res.status(201).json({ accessToken })
+```
+
+Now, for the most important part, we are creating a JWT access token sending it
+along with the response, so that the user can use it to authenticate to our
+application.
+
+Make sure to import `jwt` on top of your `index.js` file like so.
+
+```js
+const jwt = require('jsonwebtoken')
+```
+
+We can pass any useful information as the first argument to the `sign` function.
+This information will be publicly available for anyone who gets their hands on
+the token. That's why it is so important not to include any sensitive
+information in the token. In this case, we are passing the email of the user so
+that we can later use this to identify which user is trying to authenticate. The
+key name `sub` is a convention that we use to identify the subject of the JWT.
+You can use any name you want.
+
+As the second argument, we must pass a JWT secret key. You can use any string
+here. But it's so important that you keep this hidden from your code. Also, it's
+a good idea to use a strong and complex string as the key. For demonstration
+purposes, I have used a simple string and hardcoded it in the code. But **never
+ever hardcode your JWT secret key inside your code in production**. You can use
+an environment variable for this by creating a `.env` file in the root directory
+of your project and excluding it from source control. Then you can access that
+variable using a package like [dotenv](https://www.npmjs.com/package/dotenv).
+
+Also if you want to quickly generate a strong and complex string for your JWT
+secret, you can make use of the built-in Node `crypto` library like so.
+
+{/* <BlogImage */}
+  src="/blog-images/gen-crypto-string.webp"
+  alt="generating complex string using crypto"
+/>
+
+Now you might be tempted to test out the `/register` endpoint. But before that,
+we need to add some important things.
+
+First, let's add our in-memory database. Add the following `users` array
+somewhere in the `index.js` file.
+
+```js
+const users = [{ email: 'user1@mail.com', password: 'password' }]
+```
+
+We have also hardcoded one user object in our in-memory database so that we
+don't always have to create a user before we can login.
+
+Next, add the body parser middleware to our server. You must add this before
+defining any route endpoints. This will allow us to extract the json body from
+the request.
+
+```js
+app.use(express.json())
+```
+
+With this, our `/register` endpoint is ready. Now let's test it out.
+
+```shell
+curl -X POST http://localhost:3000/register
+{"error":"Email and password are required"}
+```
+
+```shell
+curl -X POST http://localhost:3000/register -H 'Content-Type: application/json' -d '{"email": "user1@mail.com", "password": "password"}'
+{"error":"Email already registered"}
+```
+
+```shell
+curl -X POST http://localhost:3000/register -H 'Content-Type: application/json' -d '{"email": "newuser@mail.com", "password": "password"}'
+{"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuZXd1c2VyQG1haWwuY29tIiwiaWF0IjoxNjQzODIwMTE5fQ.vL6L-TzKkR8jd8iGUqUb3v6xfzhBN9a7CGW3wOispfo"}
+```
+
+Cool! now we can register a new user, as well as our validations, are working.
+
+Now let's add the `/login` endpoint as well.
+
+```js
+app.post('/login', (req, res) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' })
+  }
+
+  const registered = users.find((user) => user.email === email)
+  if (!registered) {
+    return res.status(302).json({ error: 'Invalid credentials' })
+  }
+
+  if (registered.password !== password) {
+    return res.status(302).json({ error: 'Invalid credentials' })
+  }
+
+  const accessToken = jwt.sign({ sub: email }, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+  })
+
+  res.status(200).json({ accessToken })
+})
+```
+
+Let's break it down.
+
+I don't think the first couple of lines need explanation. They are the same as
+in the `/register` route.
+
+```js
+const registered = users.find((user) => user.email === email)
+if (!registered) {
+  return res.status(401).json({ error: 'Invalid credentials' })
+}
+```
+
+Here, we are checking if the user is present in our database with the provided
+email. If not, we are returning a `401 - Unauthorized` status code and sending
+an error message to the user.
+
+```js
+if (registered.password !== password) {
+  return res.status(401).json({ error: 'Invalid credentials' })
+}
+```
+
+Next, we are checking if the password provided by the user matches with the user
+in the database. If not, we are returning a `401 - Unauthorized` status code and
+sending an error message to the user.
+
+```js
+const accessToken = jwt.sign({ sub: email }, process.env.JWT_ACCESS_SECRET, {
+  expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+})
+
+res.status(200).json({ accessToken })
+```
+
+Finally, if all validations are passed, we will simply generate a JWT access
+token and send it along with the response like before.
+
+With this, our `/login` endpoint is also ready. Now let's test it out.
+
+```shell
+curl -X POST http://localhost:3000/login
+{"error":"Email and password are required"}
+```
+
+```shell
+curl -X POST http://localhost:3000/login -H 'Content-Type: application/json' -d '{"email": "unregistered@mail.com", "password": "password"}'
+{"error":"Invalid credentials"}
+```
+
+```shell
+curl -X POST http://localhost:3000/login -H 'Content-Type: application/json' -d '{"email": "user1@mail.com", "password": "wrongpassword"}'
+{"error":"Invalid credentials"}
+```
+
+```shell
+curl -X POST http://localhost:3000/login -H 'Content-Type: application/json' -d '{"email": "user1@mail.com", "password": "password"}'
+{"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMUBtYWlsLmNvbSIsImlhdCI6MTY0MzgyMTI1OCwiZXhwIjoxNjQzODI0ODU4fQ.SzOrY5NZpOKInqfzUAd1l4Dadj7XwNGvwS3QKgupfoM"}
+```
+
+Looks like our `/login` route works as expected.
+
+### The protected route
+
+Now we need a protected route to test our authentication functionality. If the
+user is authenticated with our application only we should allow them to access
+the resources within this route.
+
+We also need a way to somehow intercept each request for this route and check if
+the user is logged in.
+
+First, let's add a new GET request handler in the `/protected` endpoint.
+
+```js
+app.get('/protected', (req, res) => {
+  res.status(200).json({ message: `You are viewing a protected route` })
+})
+```
+
+Now let's try sending a GET request to this endpoint.
+
+```shell
+curl -X GET http://localhost:3000/protected
+{"message":"You are viewing a protected route"}
+```
+
+Well, looks like we can access this route without any sort of authentication.
+Let's not allow that.
+
+To achieve this, we can use express middleware. Middleware are functions that
+are executed during the life cycle of a request to the Express server. This
+means we can define a function that should run before the route handler and
+intercept the request. We can then check if the user is authenticated or not. If
+they are authenticated we will allow them to access the route.
+
+Add the following function:
+
+```js
+function requireAuthentication(req, res, next) {
+  const authorizationHeader = req.headers.authorization
+
+  if (!authorizationHeader) {
+    return res.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const token = authorizationHeader.split(' ')[1]
+
+  if (!token) {
+    return res.status(401).send({ error: 'Unauthorized' })
+  }
+
+  try {
+    const payload = jwt.verify(token, 'MY_JWT_SECRET_KEY')
+
+    const user = users.find((user) => user.email === payload.sub)
+    delete user.password
+    req.user = user
+
+    next()
+  } catch (error) {
+    res.status(401).send({ error: 'Unauthorized' })
+  }
+}
+```
+
+As usual, let's break it down.
+
+```js
+function requireAuthentication(req, res, next) {
+```
+
+Here we are defining a function called `requireAuthentication`. This function
+will take three arguments: `req`, `res` and `next`. The `req` and `res`
+arguments are as same as our other route handlers. Since this will be a
+middleware function, we will additionally get a `next` function as the third
+argument.
+
+We can define as many middleware functions as we want for any route. We can use
+the `next` function to call the next middleware when we make sure the user is
+authenticated. In our case, we only have one middleware. Therefore, it will call
+our route handler.
+
+```js
+const authorizationHeader = req.headers.authorization
+
+if (!authorizationHeader) {
+  return res.status(401).send({ error: 'Unauthorized' })
+}
+
+const token = authorizationHeader.split(' ')[1]
+
+if (!token) {
+  return res.status(401).send({ error: 'Unauthorized' })
+}
+```
+
+If a user wants to authenticate using JWT, they will send an `Authorization`
+header with the `Bearer` token in their request. We can extract the token from
+the header and verify it. Upon successful verification, we will authenticate the
+user
+
+First, we will implement some validation logic. We will check if the
+`authorization` header is provided with the request. If not, we will return a
+`401 - Unauthorized` status code and send an error message to the user.
+
+Then we will try to split the `authorization` header into two parts. The first
+part should be `Bearer` and the second part should be the token. If the format
+is incorrect we will return a `401 - Unauthorized` status code and send an error
+message to the user.
+
+If the user provided the correct format, we will get the token from the second
+part of the `authorization` header.
+
+```js
+try {
+  const payload = jwt.verify(token, 'MY_JWT_SECRET_KEY')
+
+  const user = users.find((user) => user.email === payload.sub)
+  delete user.password
+  req.user = user
+
+  next()
+} catch (error) {
+  res.status(401).send({ error: 'Unauthorized' })
+}
+```
+
+Finally, the important bit. We will verify the token with the `verify` method.
+We have to pass the token and the secret key as the first and second arguments
+respectively.
+
+The secret key we are passing must match the one we used to sign the JWT token.
+
+This verification could fail. therefore we need to handle the error. We can do
+so by wrapping this in a `try catch` statement.
+
+Upon error, we will return a `401 - Unauthorized` status code and send an error
+
+If the verification is successful, we will get the payload of the token. We can
+assign it to a variable called `payload`. This payload will contain the
+information we passed during the signing of the token. In our case, it should
+contain the user's email address.
+
+This means our user is authenticated. We can now call the next function to move
+on to the next middleware. But before that, we will find the user in our
+in-memory database by the email we get from the payload and attach it to the
+request. This will help us to access the user's data in the route handler via
+request object.
+
+Notice that we are also deleting the user's password before attaching it to the
+request to prevent access to unnecessary information.
+
+Now, how do we use this middleware? Well, we can add it to our `/protected`
+route handler like so.
+
+```js
+app.get('/protected', requireAuthentication, (req, res) => {
+  res.status(200).json({ message: `You are viewing a protected route` })
+})
+```
+
+This will make sure to run our middleware before processing the user request.
+
+Before testing out, we will make a small change to our `/protected` route.
+
+```js
+app.get('/protected', requireAuthentication, (req, res) => {
+  const { email } = req.user
+  res
+    .status(200)
+    .json({ message: `You are viewing a protected route as ${email}` })
+})
+```
+
+Remember, when we attached the user information to request object if the user is
+authenticated? Well, we can now make use of it in our route handler. We will
+extract the user's email address from the request object and use it to display a
+message to the user.
+
+Great, It's testing time...
+
+First, let's try to access the `/protected` route without authentication as
+before.
+
+```shell
+curl -X GET http://localhost:3000/protected
+{"error":"Unauthorized"}
+```
+
+Cool! we can no longer access this route without authentication.
+
+Let's provide test it out with the correct authentication token. We will get a
+valid token by logging in to our application with our mock user
+`user1@mail.com`.
+
+```shell
+curl -X POST http://localhost:3000/login -H 'Content-Type: application/json' -d '{"email": "user1@mail.com", "password": "password"}'
+{"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMUBtYWlsLmNvbSIsImlhdCI6MTY0MzgyMTI1OCwiZXhwIjoxNjQzODI0ODU4fQ.SzOrY5NZpOKInqfzUAd1l4Dadj7XwNGvwS3QKgupfoM"}
+```
+
+```shell
+curl -X GET http://localhost:3000/protected -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMUBtYWlsLmNvbSIsImlhdCI6MTY0MzgyMTI1OCwiZXhwIjoxNjQzODI0ODU4fQ.SzOrY5NZpOKInqfzUAd1l4Dadj7XwNGvwS3QKgupfoM'
+{"message":"You are viewing a protected route as user1@mail.com"}
+```
+
+Voilà! You can switch the in-memory database to a real database, hash the
+password before storing in the database, extract the JWT secret key to a
+environment variable and you have yourself a production-grade authentication
+system.
+
+You can find the source code for this tutorial on
+[GitHub](https://github.com/iam-amanxz/express-jwt-authentication).
+
+Until we meet again! 🙌

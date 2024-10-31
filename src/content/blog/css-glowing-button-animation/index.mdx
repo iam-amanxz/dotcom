@@ -1,0 +1,159 @@
+---
+title: CSS Glowing Button Animation
+date: 2022-02-13
+category: Web Development
+tags: [css]
+read_time: 3 min
+cover_image: ./cover.webp
+excerpt: Learn how to create a glowing button with CSS
+card_color: "#6EE7B7"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+Today we will learn how to create a beautiful glowing button using pure CSS.
+
+Here is what we will build:
+
+{/* <BlogImage src="https://i.imgur.com/nTBHdGe.gif" alt="demo" /> */}
+
+## Markup
+
+Let's start with the HTML markup for our button.
+
+```html
+<body>
+  <button class="button">Hover Me</button>
+</body>
+```
+
+Simple enough. We have a button with the class `button`. We will perform the
+rest of the magic using CSS.
+
+## Styling
+
+This step is completely optional. But we will add a minimum height of 100vh to
+the body element and center the content on the screen vertically and
+horizontally using CSS grid so that we can better see our button.
+
+```css
+body {
+  height: 100vh;
+  background: #000;
+  display: grid;
+  place-items: center;
+}
+```
+
+Next, we will start styling our button.
+
+Nothing fancy here, we have added some basic styles to our button. We have made
+the `border-radius: 50px;` so that button corners will be rounded. Also, we have
+added `position: relative;` so that we can position the button glow effect
+absolutely to the button.
+
+```css
+.button {
+  position: relative;
+  height: 60px;
+  width: 200px;
+  margin: 0 35px;
+  border-radius: 50px;
+  border: none;
+  outline: none;
+  background: #000;
+  color: #fff;
+  font-size: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+```
+
+We will use the `:before` pseudo-element on the button to add the glowing effect
+to our button. Therefore, we will position it absolutely to the button. we will
+also add `-5px` on each side so that the glow effect will be 5px outside of the
+button on each side.
+
+The most important things to note here are, we have added `filter: blur(20px);`
+to give the glow a blur effect of 20px, and we have given `opacity: 0;` so that
+the glow effect will be hidden by default. Also, we have added
+`transition: opacity 0.5s;` to make the glow effect appear and disappear
+smoothly.
+
+`background: inherit;` is used to inherit the gradient background color from the
+button when being hovered.
+
+```css
+.button:before {
+  content: '';
+  position: absolute;
+  background: inherit;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 50px;
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+```
+
+Now for the fun part, we will add styles to the button when the user hovers over
+it using the `:hover` pseudo-selector.
+
+Here, we have added a linear gradient as the button background with 4 different
+colors with a direction of `90deg`. We have made the `background-size: 400%;` so
+that each gradient color will take up 100% width of the button background when
+the animation is in progress. We have also added a `z-index: 1;` so that the
+button text will be on top of the glow effect. Lastly, we have added
+`animation: glow 8s linear infinite;` to give the button an infinite glowing
+effect when hovered. We will define the animation `glow` in the next step.
+
+Just like that, we have also added `opacity: 1;` and `z-index: -1;` to the
+`:before` pseudo-element of the button when the button is being hovered. This
+will make the glow visible and make the button text on top of the glow when the
+button is being hovered.
+
+```css
+.button:hover {
+  background: linear-gradient(90deg, #03a9fa, #f441a5, #ffeb3b, #03a9f4);
+  background-size: 400%;
+  z-index: 1;
+  animation: glow 8s linear infinite;
+}
+
+.button:hover:before {
+  opacity: 1;
+  z-index: -1;
+}
+```
+
+Finally, we will add the `glow` keyframes animation.
+
+Here, we made the `background-position: 0%;` at 0% of the animation and
+`background-position: 400%;` at 100% to gradually change the background-position
+of the button. This combined with the `8s` duration of the animation we defined
+in the previous step will make the button background-position change smoothly
+and make each gradient color appear and disappear from the side.
+
+```css
+@keyframes glow {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 400%;
+  }
+}
+```
+
+That's it, in a few simple steps, we have created a glowing button. You can play
+around with the colors, background-size, and duration of the animation to
+achieve a different result.
+
+You can find the source code for this tutorial on
+[Codepen](https://codepen.io/iam-amanxz/pen/VwerOER).
+
+Until we meet again! 🙌

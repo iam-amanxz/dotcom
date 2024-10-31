@@ -1,0 +1,23 @@
+---
+import HeroImage from "../images/hero-bitmoji.webp";
+import { Image } from "astro:assets";
+---
+
+<div class="px-10 py-20 bg-[#7064F3]">
+  <div class="max-w-4xl mx-auto flex items-center">
+    <div class="w-1/2">
+      <p class="font-bold uppercase mb-2 text-[#FDE047]">Hello, I am</p>
+      <h1 class="font-black text-5xl mb-5 text-white heading">
+        Husnul Aman, and I turn coffee into code.
+      </h1>
+      <p class="text-white text-lg">
+        I'm a Software Engineer specializing in building (and occasionally
+        designing) exceptional digital experiences. Currently, I'm focused on
+        developing software solutions at CabbageApps with MERN stack.
+      </p>
+    </div>
+    <div class="w-1/2">
+      <Image src={HeroImage} alt="Hero Image" />
+    </div>
+  </div>
+</div>

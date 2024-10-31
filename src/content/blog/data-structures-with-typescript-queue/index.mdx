@@ -1,0 +1,206 @@
+---
+title: 'Data structures with TypeScript - Queue'
+date: 2022-09-27
+category: Programming
+tags: [typescript, dsa]
+read_time: 5 min
+cover_image: ./cover.webp
+excerpt:
+  Learn how to implement and test a basic Queue data structure using TypeScript
+card_color: "#FDE047"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+In this chapter of Learning Data Structures with Typescript, we will be
+implementing and testing the Queue data structure.
+
+<br />
+## What is a Queue?
+
+A queue is a linear data structure that follows the order of First In First
+Out(FIFO). This means the first inserted element will be removed first. You can
+think of the queue as a line of people waiting to purchase movie tickets at a
+cinema theater.
+
+{/* <BlogImage src="https://imgur.com/Nmh4ueI.png" alt="first in first out order" /> */}
+
+<br />
+## Use cases of Queue data structure.
+
+The queue can be useful in a situation where the order of the data inserted is
+important. Following are some common scenarios where queues can be useful.
+
+- **Handling website traffic**
+- **Maintaining the playlist in media players**
+- **Managing requests on a single shared resource**
+
+<br />
+## Basic operations of a Queue
+
+A queue should be able to perform the following basic operations.
+
+- **Enqueue**: Add an element to the end of the queue
+- **Dequeue**: Remove an element from the front of the queue
+- **IsEmpty**: Check if the queue is empty
+- **IsFull**: Check if the queue is full
+- **Peek**: Get the value of the first element without removing it
+
+{/* <BlogImage src="https://imgur.com/pyOuglM.png" alt="operations of a queue" /> */}
+
+<br />
+## Implementation
+
+In order to implement the Queue data structure, we can follow the following
+steps.
+
+- Define 2 variables called `FRONT` and `REAR` to keep track of the first and
+  last element of the queue
+- When initialized, set the value of `FRONT`, `REAR` to `-1`. Later we can use
+  this to check if the queue is empty or not.
+- Whenever an item is enqueued, increase the value of `REAR` by 1 and place the
+  new element at the position pointed by `REAR`. If the queue is empty, increase
+  the value of `FRONT` by 1. Also, check if the queue is full before pushing a
+  new element.
+- Whenever an item is dequeued, decrease the value of `REAR` by 1. Also, check
+  if the queue is empty before dequeuing an element. When dequeuing the last
+  element, set the `FRONT` back to 0.
+
+Following is the TyepeScript implementation of the Queue data structure
+
+```ts
+class Queue<T> {
+  private _front: number
+  private _rear: number
+  private _capacity: number
+  private _queue: T[]
+
+  constructor(capacity: number) {
+    this._front = -1
+    this._rear = -1
+    this._capacity = capacity
+    this._queue = [] as T[]
+  }
+
+  get queue() {
+    return this._queue
+  }
+
+  isFull(): boolean {
+    return this._front === 0 && this._rear === this._capacity - 1
+  }
+
+  isEmpty(): boolean {
+    return this._front === -1
+  }
+
+  enqueue(item: T): boolean {
+    if (this.isFull()) {
+      console.log('Failed: Maximum capacity reached')
+      return false
+    }
+
+    if (this._front === -1) {
+      this._front = 0
+    }
+    this._rear++
+    this._queue.push(item)
+    return true
+  }
+
+  dequeue(): boolean {
+    if (this.isEmpty()) {
+      console.log('Failed: Queue is already empty')
+      return false
+    }
+    this._queue.shift()
+    if (this._front === this._rear) {
+      this._front = -1
+      this._rear = -1
+    } else {
+      this._rear--
+    }
+    return true
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      console.log('Failed: Queue is empty')
+      return false
+    }
+    return this._queue[this._front]
+  }
+}
+```
+
+<br />
+## Testing
+
+Now that we have implemented the Queue data structure using TypeScript, it is
+time to test the functionalities of our Queue. We will be using Jest to test
+them.
+
+```ts
+describe('test queue functionality', () => {
+  it('should be empty when initialized', () => {
+    const queue = new Queue(10)
+    const isEmpty = queue.isEmpty()
+
+    expect(isEmpty).toBe(true)
+  })
+
+  it('should be full when max capacity is reached', () => {
+    const queue = new Queue<string>(2)
+    queue.enqueue('🐅')
+    queue.enqueue('🐐')
+    const isFull = queue.isFull()
+
+    expect(isFull).toBe(true)
+  })
+
+  it('should add items to the queue', () => {
+    const queue = new Queue<number>(3)
+    queue.enqueue(2)
+    queue.enqueue(3)
+
+    expect(queue.queue).toStrictEqual([2, 3])
+  })
+
+  it('should remove items from the queue', () => {
+    const queue = new Queue<string>(5)
+    queue.enqueue('a')
+    queue.enqueue('b')
+    queue.enqueue('c')
+    queue.enqueue('d')
+    queue.enqueue('e')
+    queue.dequeue()
+    queue.dequeue()
+
+    expect(queue.queue).toStrictEqual(['c', 'd', 'e'])
+  })
+
+  it('should not allow to add more item than the capacity', () => {
+    const queue = new Queue<number>(1)
+    queue.enqueue(2)
+    const status = queue.enqueue(3)
+    expect(status).toBe(false)
+  })
+
+  it('should not allow to remove item when the queue is empty', () => {
+    const queue = new Queue<number>(1)
+    const status = queue.dequeue()
+
+    expect(status).toBe(false)
+  })
+
+  it('should return the first element', () => {
+    const queue = new Queue<string>(3)
+    queue.enqueue('hello')
+    queue.enqueue('world')
+    queue.enqueue('people')
+    const firstElement = queue.peek()
+
+    expect(firstElement).toBe('hello')
+  })
+})
+```

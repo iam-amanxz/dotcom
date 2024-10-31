@@ -1,0 +1,399 @@
+---
+title: React Render Props with class based and functional components
+date: 2021-12-24
+category: Web Development
+tags: [react, javascript]
+read_time: 8 min
+cover_image: ./cover.webp
+excerpt:  Learn how to implement the React Render Props pattern with class based and functional React components.
+card_color: "#FDE047"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+'Render Props' is one of many ways to share common functionality between
+components in React. Render props achieves this by taking a function as a prop.
+This function exposes the data via its argument to the React component that is
+returned. This prop is usually called `render`. Hence the name 'Render Props'.
+
+The usage of Render Props would look like this:
+
+```javascript {showline}
+<DataProvider
+  render={(data) => {
+    return <span>{data.title}</span>
+  }}
+/>
+```
+
+In this example, `DataProvider` is a component that holds some kind of data or
+common functionality. It exposes this data to the `span` element via its
+`render` prop.
+
+Here, the `Data Provider` component doesn't care about the component that is
+returned from the function. Its whole purpose is to expose some data to whatever
+component that is being returned.
+
+You might have heard of a similar pattern called Higher Order Components (HOC)
+before. Both of these patterns ultimately solve the same problem in a different
+fashion. But let's keep the HOC for a different day. If you are wondering when
+to choose one over the other, it's totally up to you.
+
+## Defining the use case for Render Props
+
+Before diving into the implementation details, let's come up with a scenario
+when we might wanna make use of Render Props. Assume you have a `Layout`
+component that renders a sidebar. You want the sidebar to be hidden when the
+screen size is less than 768px. And you have a `DeviceSummary` component that
+simply displays the device information such as screen height and width to the
+user.
+
+Both of these components are not related to each other in any way. However, they
+still need to know about the device screen size information. This is when we
+need to think about providing the screen size information from a central place.
+This way, later down the road if we need this information in some other
+component, we don't have to implement the logic again. This is where render
+props come in.
+
+To achieve this, we will create a `ScreenSizeProvider` component that will hold
+the functionality to calculate the device screen width and height. We will
+expose this information via Render Props to our `Layout` component and
+`DeviceSummary` component.
+
+## Implementing Render Props with class based components
+
+Now that the scope is clear, let's see how we can achieve this with a class
+based component.
+
+#### Let's define some milestones:
+
+1. Create a `ScreenSizeProvider` component and implement the logic to calculate
+   and expose device screen size information
+2. Get the current screen width from the `ScreenSizeProvider` and conditionally
+   render the `Sidebar` component inside the layout component.
+3. Get the current screen width and height from the `ScreenSizeProvider` and
+   display that inside the `DeviceSummary` component.
+
+We will create the `ScreenSizeProvider` component like follows:
+
+```javascript
+import React from 'react'
+
+class ScreenSizeProvider extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      screenWidth: 0,
+      screenHeight: 0,
+    }
+  }
+
+  componentDidMount() {
+    this.updateWindowDimensions()
+    window.addEventListener('resize', this.updateWindowDimensions)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions)
+  }
+
+  updateWindowDimensions = () => {
+    this.setState({
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+    })
+  }
+
+  render() {
+    return this.props.render(this.state)
+  }
+}
+```
+
+#### Let's break down what we did above:
+
+First We created a class based component called `ScreenSizeProvider` that
+extends `React.Component`.
+
+Then we added a piece of state to the component with initial `screenWidth`, and
+`screenHeight` is set to 0. We will use this state to keep track of the screen
+width and height.
+
+```javascript
+class ScreenSizeProvider extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      screenWidth: 0,
+      screenHeight: 0,
+    }
+  }
+}
+```
+
+Then we added a `componentDidMount` lifecycle method to the component. Here,
+`updateWindowDimensions` functions is called as soon as the component is mounted
+to the DOM. We will define this function in the next steps. This will be the
+function that is responsible for getting the screen width and height, and
+updating the state respectively.
+
+Next we added a `resize` event listener to the `window` object. This event
+listener takes our `updateWindowDimensions` function as a callback. This means,
+whenever the window is resized, the `updateWindowDimensions` function will be
+called. This will allow us to get the latest screen width and height every time
+the screen is resized.
+
+```javascript
+componentDidMount() {
+  this.updateWindowDimensions();
+  window.addEventListener('resize', this.updateWindowDimensions);
+}
+```
+
+Then we removed the event listener using the `componentWillUnmount` lifecycle
+method. This will happen before the component is removed from the DOM. This is a
+good place to remove any event listeners that we no longer need. This is nothing
+but a performance optimization to avoid memory leaks in our application.
+
+```javascript
+componentWillUnmount() {
+  window.removeEventListener('resize', this.updateWindowDimensions);
+}
+```
+
+Next we defined the `updateWindowDimensions` function. This function will get
+the current screen width using `window.innerWidth`, and current screen height
+using `window.innerHeight`, and update the `screenWidth` and `screenHeight`
+states respectively.
+
+```javascript
+updateWindowDimensions = () => {
+  this.setState({
+    screenWidth: window.innerWidth,
+    screenHeight: window.innerHeight,
+  })
+}
+```
+
+Finally, the important piece to the puzzle. We defined the `render` method and
+returned the `render` function passed via props along with the state. I know it
+sounds a little confusing.
+
+Here, `render` is a method that belongs to the `React.Component` class. This
+method is required to return something from the component. `props.render` is
+what we are returning from this component.
+
+```javascript
+render() {
+  return this.props.render(this.state);
+}
+```
+
+If it's still confusing, assume the prop name that we will give to the
+`ScreenSizeProvider` is going to be called `build`. In that case, the render
+method will look like this:
+
+```javascript
+render() {
+  return this.props.build(this.state);
+}
+```
+
+I hope this is clear now.
+
+Now that we have defined the `ScreenSizeProvider` component, we can make use of
+it to get the information we need and conditionally render the `Sidebar`
+component inside the `Layout` component:
+
+```javascript
+import React from 'react'
+
+class Layout extends React.Component {
+  render() {
+    return (
+      <ScreenSizeProvider
+        render={(screenSize) => {
+          return screenSize.screenWidth > 768 && <Sidebar />
+        }}
+      />
+    )
+  }
+}
+```
+
+As you can see, we are using the `ScreenSizeProvider` component inside the
+`Layout` component to get the screen size information via its render prop. Then
+we are returning the `Sidebar` component only if the screen width is greater
+than 768px.
+
+Now, let's see how we can utilize the same technique inside the `DeviceSummary`
+component as well. This should be simple enough.
+
+```javascript
+import React from 'react'
+
+class DeviceSummary extends React.Component {
+  render() {
+    return (
+      <ScreenSizeProvider
+        render={(screenSize) => (
+          <div>
+            <h1>Your Device Summary</h1>
+            <p>Screen Width: {screenSize.screenWidth}px</p>
+            <p>Screen Height: {screenSize.screenHeight}px</p>
+          </div>
+        )}
+      />
+    )
+  }
+}
+```
+
+Congratulations! Just like that, we have reused the functionality to calculate
+the screen size information inside both `Layout` and `DeviceSummary` components
+by extracting it away to a central place.
+
+Now you may have an idea about the other scenarios where you might need to
+consider using the Render Props pattern.
+
+## Putting it together with a functional component.
+
+Class based components are soft deprecated and might be removed in the future
+versions of React. In the modern React world, we use functional components
+instead. Therefore, it is a must to understand how we can implement the render
+props pattern with functional components. Nonetheless, It doesn't hurt to learn
+how class based components work.
+
+Let's take everything we have learned so far and put it together with a
+functional component. I will take the same use case from above in order to keep
+this simple and relevant.
+
+We will create our `ScreenSizeProvider` component first.
+
+```javascript
+import React from 'react'
+
+const ScreenSizeProvider = (props) => {
+  const [screenWidth, setScreenWidth] = React.useState(0)
+  const [screenHeight, setScreenHeight] = React.useState(0)
+
+  React.useEffect(() => {
+    updateWindowDimensions()
+    window.addEventListener('resize', updateWindowDimensions)
+    return () => {
+      window.removeEventListener('resize', updateWindowDimensions)
+    }
+  }, [])
+
+  const updateWindowDimensions = () => {
+    setScreenWidth(window.innerWidth)
+    setScreenHeight(window.innerHeight)
+  }
+
+  return props.render({ screenWidth, screenHeight })
+}
+```
+
+#### Let's break down:
+
+First, we created the `ScreenSizeProvider` component with ES6 arrow function
+syntax. This component will take the `props` as an argument.
+
+```javascript
+const ScreenSizeProvider = (props) => {
+  ...
+};
+```
+
+Then we added 2 pieces of state to the component using the `useState` hook from
+React. `useState` hook returns an array with the current state value and a
+function to update that state. it takes an initial value as an argument.
+
+We will use it to define `screenWidth` and `screenHeight` states and set their
+initial value to 0 as before.
+
+```javascript
+const [screenWidth, setScreenWidth] = React.useState(0)
+const [screenHeight, setScreenHeight] = React.useState(0)
+```
+
+Next, we used the `useEffect` hook from React to call our
+`updateWindowDimensions` function when the component is mounted. And we set the
+`resize` event listener to the window object by passing `updateWindowDimensions`
+as a callback in order to update the screen size information when the screen is
+resized.
+
+You can think of the `useEffect` hook as an all-in-one component lifecycle
+method. You can read more about it
+[here](https://reactjs.org/docs/hooks-reference.html#useeffect).
+
+The return function inside the `useEffect` hook will be called before the
+component is removed from the UI. We can use this to remove the event listener
+when the component is unmounted to avoid memory leaks as before.
+
+The empty array as the second argument to the `useEffect` hook is the dependency
+array. Empty array means that the `useEffect` will only run once when the
+component is mounted.
+
+```javascript
+React.useEffect(() => {
+  updateWindowDimensions()
+  window.addEventListener('resize', updateWindowDimensions)
+  return () => {
+    window.removeEventListener('resize', updateWindowDimensions)
+  }
+}, [])
+```
+
+Next we defined the `updateWindowDimensions` function. This function will use
+the `setScreenWidth` and `setScreenHeight` functions to update the `screenWidth`
+and `screenHeight` state respectively.
+
+```javascript
+const updateWindowDimensions = () => {
+  setScreenWidth(window.innerWidth)
+  setScreenHeight(window.innerHeight)
+}
+```
+
+Finally, we returned the `props.render` function with the screen size
+information by passing `screenWidth` and `screenHeight` to it.
+
+```javascript
+return props.render({ screenWidth, screenHeight })
+```
+
+That's it! We have now implemented render prop using a functional component. Now
+we can use it the same way as before to conditionally render the `Sidebar`
+component and display the device summary information as follows:
+
+```javascript
+const Layout = () => (
+  <ScreenSizeProvider
+    render={(screenSize) => {
+      return screenSize.screenWidth > 768 && <Sidebar />
+    }}
+  />
+)
+
+const DeviceSummary = () => (
+  <ScreenSizeProvider
+    render={(screenSize) => (
+      <div>
+        <h1>Your Device Summary</h1>
+        <p>Screen Width: {screenSize.screenWidth}px</p>
+        <p>Screen Height: {screenSize.screenHeight}px</p>
+      </div>
+    )}
+  />
+)
+```
+
+If you've made it this far
+
+{/* <BlogImage */}
+  alt="obama clapping"
+  src="https://c.tenor.com/1zr0YJAzjXgAAAAM/congratulations.gif"
+/>
+
+Until next time… 🙌

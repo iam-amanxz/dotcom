@@ -1,0 +1,201 @@
+---
+title: 'Data structures with TypeScript - Stack'
+date: 2022-09-22
+category: Programming
+tags: [typescript, dsa]
+read_time: 5 min
+cover_image: ./cover.webp
+excerpt: Learn how to implement and test a basic Stack data structure using TypeScript
+card_color: "#FDA5A5"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+This is the first of a multi-part series where we will be implementing some
+popular data structures using TypeScript. This week's focus is Stack data
+structure.
+
+<br />
+## What is a Stack?
+
+A stack is a linear data structure that follows the order of **Last In First
+Out(LIFO).** This means the first inserted element will be removed last. You can
+think of the stack as a pile of books that are placed on top of one another.
+
+{/* <BlogImage src="/blog-images/stack.png" alt="stack" /> */}
+
+<br />
+## Use cases of Stack data structure.
+
+The stack can be useful in a situation where the order of the data inserted is
+important. Following are some common scenarios where stack can be useful.
+
+- **Javascript call stack** - Keep track of function calls
+- **Undo/Redo** - Undo by removing the last element in the stack, and redo by
+  inserting the last removed item from the stack
+- **Reversing** - Reverse a string
+
+<br />
+## Basic operations of a Stack
+
+A stack should be able to perform the following basic operations.
+
+- **Push**: Add an element to the top of a stack
+- **Pop**: Remove an element from the top of a stack
+- **IsEmpty**: Check if the stack is empty
+- **IsFull**: Check if the stack is full
+- **Peek**: Get the value of the top element without removing it
+
+{/* <BlogImage src="/blog-images/stack-operations.png" alt="stack" /> */}
+
+<br />
+## Implementation
+
+In order to implement the Stack data structure, we can follow the following
+steps.
+
+- Define a variable called `TOP` to keep track of the first element in the stack
+- When initialized, set the value of `TOP` to `-1`. Later we can use this to
+  check if the stack is empty or not.
+- Whenever an item is pushed, increase the value of `**TOP**` by 1 and place the
+  new element at the position pointed by `TOP`. Also, check if the stack is full
+  before pushing a new element.
+- Whenever an item is popped, decrease the value of `TOP` by 1. Also, check if
+  the stack is empty before popping an element.
+
+Following is the TyepeScript implementation of the Stack data structure
+
+<aside>
+  💡 Since we are using **`Array`** data structure to implement the stack, we
+  can get away with not using the **`TOP`** variable at all. We already have the
+  required index information built into JavaScript arrays.
+</aside>
+
+```ts
+class Stack<T> {
+  private _top: number
+  private _capacity: number
+  private _stack: T[]
+
+  constructor(capacity: number) {
+    this._top = -1
+    this._capacity = capacity
+    this._stack = [] as T[]
+  }
+
+  get stack() {
+    return this._stack
+  }
+
+  isEmpty(): boolean {
+    return this._top === -1
+  }
+
+  isFull(): boolean {
+    return this._top === this._capacity - 1
+  }
+
+  peek(): T {
+    return this._stack[0]
+  }
+
+  push(item: T) {
+    if (this.isFull()) {
+      console.log('Failed: Maximum capacity reached')
+      return false
+    }
+
+    this._stack.push(item)
+    this._top++
+  }
+
+  pop() {
+    if (this.isEmpty()) {
+      console.log('Failed: Stack is already empty')
+      return false
+    }
+
+    this._stack.pop()
+    this._top--
+  }
+
+  printStack() {
+    this._stack.forEach((item, index) => {
+      console.log(`Item at index ${index} => ${item}`)
+    })
+  }
+}
+```
+
+<br />
+## Testing
+
+Now that we have implemented the Stack data structure using TypeScript, it is
+time to test the functionalities of our Stack. We will be using Jest to write
+some important test cases.
+
+```ts
+describe('test stack functionality', () => {
+  it('should be empty when initialized', () => {
+    const stack = new Stack(10)
+    const isEmpty = stack.isEmpty()
+
+    expect(isEmpty).toBe(true)
+  })
+
+  it('should be full when max capacity is reached', () => {
+    const stack = new Stack<string>(2)
+    stack.push('🐅')
+    stack.push('🐐')
+    const isFull = stack.isFull()
+
+    expect(isFull).toBe(true)
+  })
+
+  it('should add items to the stack', () => {
+    const stack = new Stack<number>(3)
+    stack.push(2)
+    stack.push(3)
+
+    expect(stack.stack).toStrictEqual([2, 3])
+  })
+
+  it('should remove items from the stack', () => {
+    const stack = new Stack<string>(5)
+    stack.push('a')
+    stack.push('b')
+    stack.push('c')
+    stack.push('d')
+    stack.push('e')
+    stack.pop()
+    stack.pop()
+
+    expect(stack.stack).toStrictEqual(['a', 'b', 'c'])
+  })
+
+  it('should not allow adding more item than the capacity', () => {
+    const stack = new Stack<number>(1)
+    stack.push(2)
+    const status = stack.push(3)
+
+    expect(status).toBe(false)
+  })
+
+  it('should not allow removing item when the stack is empty', () => {
+    const stack = new Stack<number>(1)
+    const status = stack.pop()
+
+    expect(status).toBe(false)
+  })
+
+  it('should return the first element', () => {
+    const stack = new Stack<string>(3)
+    stack.push('hello')
+    stack.push('world')
+    stack.push('people')
+    const firstElement = stack.peek()
+
+    expect(firstElement).toBe('hello')
+  })
+})
+```

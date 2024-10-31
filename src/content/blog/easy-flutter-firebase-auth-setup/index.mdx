@@ -1,0 +1,351 @@
+---
+title: Easy Firebase Authentication with Flutter
+date: 2022-01-22
+category: Mobile Development
+tags: [flutter, firebase, provider]
+read_time: 6 min
+cover_image: ./cover.webp
+excerpt:  Learn how to easily implement Firebase authentication with a Flutter app.
+card_color: "#A5B4FB"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+Managing user authentication in your app can be a pain. Firebase Auth provides
+an easy solution for this without needing a server of your own. Unless you were
+living under a rock for the past few years, you've probably already heard about
+Firebase. If not, I suggest you check out the
+[Firebase Documentation](https://firebase.google.com/docs)
+
+In this article, I will be showing you how to set up a simple authentication
+system using Firebase in your Flutter app. I won't be implementing proper folder
+structure or error handling today.
+
+The focus of this tutorial is to get you up and running as quickly as possible
+with a functional authentication system. With the knowledge you gain here, you
+can always add more functionalities to your app.
+
+I assume you already
+
+- know how to create a flutter app
+- know a little something about Firebase Auth
+- know how to create a Firebase project and connect to your Flutter app
+
+If you want to learn how to install flutter and setup a simple Flutter app,
+check out the [Flutter docs](https://docs.flutter.dev/get-started/install)
+
+Refer to this
+[guide](https://firebase.google.com/docs/flutter/setup?platform=android) if you
+don't know how to connect your Flutter app to Firebase.
+
+With that out of the way, let's get started!
+
+Here is what we will build:
+
+{/* <BlogImage alt="demo" src="https://i.imgur.com/TapmrG6.gif" /> */}
+
+For the sake of simplicity, I will be using the `signInAnnonymously` method to
+create a user account. You can always switch it for any other sign in method and
+it should work.
+
+### Project cleanup
+
+A fresh Flutter project usually comes with a default counter app. First, we will
+do some cleanup to get rid of the default app and start freshly.
+
+Delete everything inside the `lib/main.dart` file and replace it with the
+following.
+
+```dart
+import 'package:flutter/material.dart';
+
+void main()  {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Firebase Auth',
+      home: const Scaffold(),
+    ),
+  }
+}
+```
+
+Here, We have stripped out the default app and replaced it with an empty
+`Scaffold`. It won't display anything interesting now but we will come back to
+this later.
+
+### Installing the dependencies
+
+Let's first install all the dependencies we will be needing. Add the following
+dependencies to your `pubspec.yaml` file and run `flutter pub get` on your
+terminal to install them (if it doesn't start installing automatically).
+
+```yaml
+firebase_auth: ^3.3.5
+firebase_core: ^1.11.0
+provider: ^6.0.2
+```
+
+`firebase_core` package is what other firebase packages depend on. We must add
+this package if we are using any other firebase packages. `firebase_auth` is the
+package that enables us to use the Firebase authentication API. We will use the
+`provider` package to easily pass our Authentication Service class down the
+widget tree.
+
+> I suggest you add the same versions of dependencies as mine to follow along.
+> Depending on when you are reading this, later update to the latest versions if
+> you need to.
+
+### Initilaize Firebase
+
+In order to start using Firebase services, we need to initialize it first. This
+is where the `firebase_core` package we installed comes into play. Update the
+`main` function as follows.
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
+```
+
+In line 2, we to have added `WidgetsFlutterBinding.ensureInitialized();` to make
+sure that the native codes required to initialize Firebase are loaded before
+running the app.
+
+In line 3, we are initializing Firebase using `Firebase.initializeApp()`. This
+however is an asynchronous call, thus we have to `await` it and add `async` to
+the main function in order to be able to use the `await` keyword.
+
+> Make sure to import `package:firebase_core/firebase_core.dart` on top of the
+> file.
+
+### Creating the Authentication Service
+
+Next, we will create our Authentication service where we will define the
+authentication logics to handle user sign in and sign out.
+
+```dart
+class AuthService {
+  final FirebaseAuth _firebaseAuth;
+
+  AuthService(this._firebaseAuth);
+
+  Stream<User?> get authStateChanges => _firebaseAuth.idTokenChanges();
+
+  void signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
+  void signIn() async {
+    await _firebaseAuth.signInAnonymously();
+  }
+}
+```
+
+In line 2, we have created a private member variable called `_firebaseAuth`
+which is of type `FirebaseAuth`. This is the object that we will use to interact
+with the Firebase Authentication API.
+
+Then in the constructor function, we are expecting to get an instance of
+`FirebaseAuth` which we will assign to the `_firebaseAuth` variable.
+
+In line 6, we have defined a getter that returns a `Stream` of type `User`. This
+is the most important piece of the puzzle. We will make use of this getter to
+conditionally display the Home page or the Login page. This `User` type is
+coming from the `firebase_auth` package. If we don't have a `User` it will
+return null, therefore we will use the `?` operator after `User` to tell the
+compiler that we might expect a `null` value at some point.
+
+This `Stream` of `User` is coming from the `idTokenChanges` method of our
+`FirebaseAuth` instance. According to the docs, this function notifies about
+changes to the user's sign-in state (such as sign-in or sign-out) and also token
+refresh events.
+
+Finally, we have two simple functions to sign out and sign in the user that
+reaches out to Firebase's API, and calls the `signOut` and `signInAnonymously`
+methods respectively.
+
+> Make sure to import `package:firebase_auth/firebase_auth.dart`.
+
+### Creating the Home Page and Sign In Page
+
+Next, we will create a simple home page and a sign in page.
+
+```dart
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Sign out"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SignInPage extends StatelessWidget {
+  const SignInPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sign In'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Sign in"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+Nothing fancy here. We have created two stateless widgets one for each page. In
+both pages, we are displaying an `ElevatedButton` with a `Text` widget in the
+center of the screen. The `onPressed` callback functions of the buttons don't do
+anything for now.
+
+### Creating the Authentication Wrapper
+
+Finally, we will create a wrapper widget that we will call `AuthWrapper`. It
+will be responsible for displaying the home page or the sign in page depending
+on the user's sign in state. We will simply return a `StreamBuilder` widget that
+will listen to the `authStateChanges` stream from our `AuthService` class.
+
+```dart
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: context.read<AuthService>().authStateChanges,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return const HomePage();
+        }
+        return const SignInPage();
+      },
+    );
+  }
+}
+```
+
+We can use the `context.read` method of the `provider` package to access the
+`AuthService` instance (which we will provide down the widget tree in the next
+step).
+
+> Make sure to import `package:provider/provider.dart`
+
+Then in the builder function, we are using the `snapshot` parameter to check if
+we have a `User`. If we do, we will return the `HomePage`. If we don't, we will
+return the `SignInPage`. Simple enough.
+
+### Putting everything together
+
+Now that we have the basics in place, let's put everything together.
+
+First, we will make some changes to the `MyApp` widget.
+
+```dart {6,7,10}
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Provider<AuthService>(
+      create: (_) => AuthService(FirebaseAuth.instance),
+      child: const MaterialApp(
+        title: 'Flutter Firebase Auth',
+        home: AuthWrapper(),
+      ),
+    );
+  }
+}
+```
+
+In line 6, instead of returning the `MaterialApp` widget, we will return a
+`Provider` of type `AuthService`. Provider widget is coming from the Provider
+package we installed. We will return an instance of the `AuthService` class in
+the `create` function by passing in the `FirebaseAuth.instance` as an argument.
+Then we will return the `MaterialApp` widget as the child of the `Provider`
+widget. This will allow us to access the `AuthService` instance from anywhere in
+the app.
+
+In line 10, we will remove the `Scaffold` and return the `AuthWrapper` widget
+from the `MaterialApp`.
+
+With that change, we are almost done except we need to add the functionality to
+sign in and sign out the user.
+
+For this, we will revisit the `SignInPage` and `HomePage` widgets.
+
+In the `SignInPage` widget, we will add the method to sign in a user within the
+`onPressed` callback of the `ElevatedButton` like so.
+
+Once again, we will use the `context.read` method to access the `AuthService`
+
+```dart {5}
+class SignInPage extends StatelessWidget {
+  ...
+    ElevatedButton(
+      onPressed: () {
+        context.read<AuthService>().signIn();
+      },
+      child: const Text("Sign out"),
+    ),
+  ...
+}
+```
+
+Also, in the `HomePage` widget, we will add the method to sign out a user.
+
+```dart {5}
+class HomePage extends StatelessWidget {
+  ...
+    ElevatedButton(
+      onPressed: () {
+        context.read<AuthService>().signOut();
+      },
+      child: const Text("Sign out"),
+    ),
+  ...
+}
+```
+
+That's it. We have now implemented a simple yet powerful authentication system
+within our Flutter app using Firebase.
+
+You can find the source code for this tutorial on
+[GitHub](https://github.com/iam-amanxz/blog_easy_flutter_firebase_auth).
+
+Until next time… 🙌

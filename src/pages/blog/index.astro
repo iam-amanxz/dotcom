@@ -1,0 +1,24 @@
+---
+import BlogCard from "../../components/BlogCard.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("blog");
+---
+
+<Layout title="Blog">
+  <div class="px-10 py-20 grid grid-cols-4 gap-5">
+    {
+      posts.map((post) => (
+        <a href={"/blog/" + post.slug}>
+          <BlogCard
+            title={post.data.title}
+            description={post.data.excerpt}
+            date={post.data.date.toDateString()}
+            backgroundColor={post.data.card_color || "#A5B4FB"}
+          />
+        </a>
+      ))
+    }
+  </div>
+</Layout>

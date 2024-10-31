@@ -1,0 +1,555 @@
+---
+title: Scalable Theming with React Context API
+date: 2022-01-02
+category: Web Development
+tags: [react, context, hooks]
+read_time: 11 min
+cover_image: ./cover.webp
+excerpt:  Learn how to implement a simple theme system in your React app using the Context API.
+card_color: "#FDA5A5"
+---
+
+// import BlogImage from '../../components/blogs/BlogImage.astro'
+
+Dark mode has been a thing for a while now. You will find it everywhere. In this
+article, we will go a step further, and look at how to use React's Context API
+to implement a scalable theme system with multiple themes. There are plenty of
+ways to do this, but [React Context API](https://reactjs.org/docs/context.html)
+is a perfect fit for this.
+
+I won't be going into detail about how to use React Context API in this article.
+I assume you already have a basic understanding of the Context API and React
+Hooks.
+
+Here is what we will build:
+
+{/* <BlogImage src="https://i.imgur.com/KCRNAan.gif" alt="demo" /> */}
+
+if you wanna go ahead and clone the starter project, you can do so by going to
+this [repo](https://github.com/iam-amanxz/react-theming-context-api) and
+navigating to the
+[starter](https://github.com/iam-amanxz/react-theming-context-api/tree/starter)
+branch. The final code is available on the
+[final](https://github.com/iam-amanxz/react-theming-context-api/tree/final)
+branch of the repo.
+
+Throughout this article, we will be following the below steps to achieve this:
+
+- Bootstrap a React project
+- Create theme context and theme provider
+- Access theme from the app
+- Update theme
+- Persist theme and autoload on restart
+
+Alright, buckle up, and let's get started!
+
+### Bootstrapping a React project
+
+There are several ways to quickly bootstrap a React project. In this tutorial, I
+will use [Vite](https://vitejs.dev/) to bootstrap a React project. You can also
+use [Create-React-App](https://create-react-app.dev/) (CRA) if you prefer.
+
+You can skip this section if you have already downloaded the starter project or
+created the project using CRA.
+
+Assuming you have already installed
+[npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) on your
+machine, execute the following command on your terminal to initiate a new Vite
+project creation.
+
+```shell
+npm init vite
+```
+
+Follow the instruction to create a new React project using Vite.
+
+{/* <BlogImage src="/blog-images/project-setup.webp" alt="demo" /> */}
+
+1. In the first step, give your project a name
+2. Next, choose `react` as the framework
+3. Next, choose `react` as the variant. (You can choose `react-ts` if you prefer
+   to use TypesScript.)
+4. Then, navigate inside the project directory and run `npm install` to install
+   all the dependencies.
+5. Finally, run `npm run dev` to start the development server.
+
+If you follow the steps, the development server should start at
+`http://localhost:3000`, or on a different port if port 3000 is already in use.
+
+#### Project cleanup
+
+Let's do some housekeeping before we start.
+
+1. We will start by deleting the `src/App.css` file.
+2. We will also delete everything inside the `src/index.css` file. We will add
+   the styles later.
+3. Let's also delete the `src/logo.svg` file.
+4. Next we will remove everything inside the `src/App.jsx` file and replace it
+   with the following code:
+
+```jsx
+const App = () => {
+  return (
+    <div className="app">
+      <p>Hello React!</p>
+    </div>
+  )
+}
+
+export default App
+```
+
+### Creating the Theme Context
+
+Now that we have a clean project, let's create the theme context.
+
+First, create a new file in the `src` directory called `ThemeContext.jsx`.
+
+Now we can import `createContext` from React and create the `ThemeContext` by
+invoking the `createContext` function. This will create a new context object.
+
+```jsx
+import { createContext } from 'react'
+
+const ThemeContext = createContext()
+```
+
+Next, we will create the `ThemeProvider` component. We will use this component
+to wrap our entire application to provide our `ThemeContext` to all of our
+components.
+
+Notice we are passing an empty object as the `value` prop. We will come back to
+this later, when we have created our theme state.
+
+```jsx
+const ThemeProvider = ({ children }) => {
+  return (
+    <ThemeContext.Provider value={}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+```
+
+Now we will define a constant called `themes`. We will use this object to store
+all our themes. You can easily extend this object to add more themes or more
+color properties.
+
+```jsx
+const themes = {
+  light: {
+    background: '#eee',
+    color: '#333',
+  },
+  dark: {
+    background: '#111',
+    color: '#fff',
+  },
+  dim: {
+    background: '#15202b',
+    color: '#f9f8fe',
+  },
+}
+```
+
+Now that we have our `themes` constant, we can create our `theme` state using
+`useState` hook from React. We will use this state to store the current theme.
+We will assign a default theme by passing `themes.light` as the initial value.
+Make sure to import `useState` from React.
+
+Next, we will pass down the `theme` state and `setTheme` function inside the
+`value` prop of the `ThemeContext.Provider` component. This will allow all of
+our components to access the `theme` state and `setTheme` function.
+
+```jsx {2,5}
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = React.useState(themes.light)
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+```
+
+While we are here, let's create a helper hook called `useTheme` that will allow
+us to access the theme context without needing to import the `ThemeContext`
+component in all our files. Make sure to import `useContext` from React.
+
+```jsx
+const useTheme = () => useContext(ThemeContext)
+```
+
+Finally, we will export the `ThemeProvider` component as a default export, and
+export `themes` object and `useTheme` hook as named exports.
+
+```jsx
+export { themes, useTheme }
+export default ThemeProvider
+```
+
+### Providing the theme context to the application
+
+Now that we have the `ThemeContext`, we need to provide it to the entire
+application. We will do so by importing the `ThemeProvider` component inside the
+`src/main.jsx` file, and wrapping our `App` component inside the `ThemeProvider`
+component.
+
+If you've been using CRA, you will do this inside `src/index.js` file.
+
+```jsx {1,5,7}
+import ThemeProvider from './ThemeContext'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>,
+  document.getElementById('root'),
+)
+```
+
+### Accessing the theme from the application
+
+With that step, everything is set up. Now we can access the theme from anywhere
+in our up using the `useTheme` hook.
+
+Before we do that, let's add some styling to our application. Add the following
+styles to the `src/index.css` file:
+
+```css
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #fcfcfc;
+}
+
+.app h1 {
+  margin-bottom: 40px;
+}
+
+.theme-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.theme-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 85px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+.theme-item:hover {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+```
+
+Next, replace the `App` component with the following inside the `src/App.jsx`:
+
+Here, we are importing the `themes` object from `src/ThemeContext.jsx`. Then for
+each theme item, we are returning a `div` with the corresponding theme
+background color. `span` inside `div` is used to display the theme name.
+
+```jsx
+import { themes } from './ThemeContext'
+
+const App = () => {
+  return (
+    <div className="app">
+      <h1>Hello Context API</h1>
+
+      <div className="theme-container">
+        {Object.keys(themes).map((key) => {
+          return (
+            <div
+              key={key}
+              className="theme-item"
+              style={{ backgroundColor: themes[key].background }}
+            >
+              <span style={{ color: themes[key].color }}>{key}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+```
+
+Finally, the moment we've been waiting for, we will import the `useTheme` hook
+from `src/ThemeContext.jsx` and destructure the `theme` state from it inside the
+`App` component.
+
+Let's set the background color of the `App` component to the current theme's
+background color. Also, make the `h1` text color to the current theme's color.
+
+Since we are using the `light` theme as our default theme, we should be seeing
+the light background color and the dark text color specified in `themes.light`
+object.
+
+```jsx {1,4,7,8}
+import { themes, useTheme } from './ThemeContext'
+
+const App = () => {
+  const { theme } = useTheme()
+
+  return (
+    <div className="app" style={{ backgroundColor: theme.background }}>
+      <h1 style={{ color: theme.color }}>Hello Context API</h1>
+
+      <div className="theme-container">
+        {Object.keys(themes).map((key) => {
+          return (
+            <div
+              key={key}
+              className="theme-item"
+              style={{ backgroundColor: themes[key].background }}
+            >
+              <span style={{ color: themes[key].color }}>{key}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+```
+
+### Changing the theme
+
+With that, accessing the theme from the application is done. Now, let's add the
+functionality to change the theme.
+
+Destructure the `setTheme` function from the `useTheme` hook. Then we will add
+on `onClick` event handler to the `div` that wraps the theme items. Next, we
+will call the `setTheme` function with the theme item as the argument. we can
+access the corresponding theme by passing `themes[key]` as the argument to the
+`setTheme` function.
+
+```jsx {4,16}
+import { themes, useTheme } from './ThemeContext'
+
+const App = () => {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <div className="app" style={{ backgroundColor: theme.background }}>
+      <h1 style={{ color: theme.color }}>Hello Context API</h1>
+
+      <div className="theme-container">
+        {Object.keys(themes).map((key) => {
+          return (
+            <div
+              key={key}
+              className="theme-item"
+              onClick={() => setTheme(themes[key])}
+              style={{ backgroundColor: themes[key].background }}
+            >
+              <span style={{ color: themes[key].color }}>{key}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+```
+
+### Persisting the theme
+
+Let's also add the functionality to persist the theme. We can achieve this by
+saving the theme object key to the `localStorage` whenever we change the theme.
+
+To do this, let's make some changes to the `ThemeProvider` component inside the
+`src/ThemeContext.jsx` file.
+
+First we will add the `saveThemeToLocalStorage` function. This function will
+take the theme key as the argument and save it to the `localStorage` under
+`appTheme`.
+
+```jsx
+const saveThemeToLocalStorage = (key) => {
+  localStorage.setItem('appTheme', key)
+}
+```
+
+Next, we will define a function called `changeTheme` which will also take the
+theme key as the argument. Within this function, we will call the `setTheme`
+function with `themes[key]` as an argument, and `saveThemeToLocalStorage`
+function with the theme key as the argument.
+
+This will update the current theme state and also save the theme key to the
+local storage.
+
+```jsx
+const changeTheme = (key) => {
+  setTheme(themes[key])
+  saveThemeToLocalStorage(key)
+}
+```
+
+Then, we will add the `useEffect` hook to the `ThemeProvider` component with an
+empty argument list. This hook will be called when the `ThemeProvider` component
+is mounted to the DOM. Make sure to import `useEffect` from `react`.
+
+inside the `useEffect` hook, we will check if the `localStorage` has a theme
+saved under `appTheme`. If it does, we will call the `setTheme` function with
+the `themes[localThemeKey]` as the argument. This will update the initial theme
+state to the saved theme.
+
+If we don't have a theme saved in the `localStorage`, it will use the default
+`themes.light` theme.
+
+Notice we are also checking if `themes[localThemeKey]` exists inside the if
+condition. This will prevent the app from crashing if the theme key is not found
+in the `themes` object. This can happen if some user had already saved a theme
+and we deleted that theme from the `themes` object.
+
+```jsx
+useEffect(() => {
+  const localThemeKey = localStorage.getItem('appTheme')
+  if (localThemeKey && themes[localThemeKey]) {
+    setTheme(themes[localThemeKey])
+  }
+}, [])
+```
+
+We will also remove `setTheme` function from the values object and pass the new
+`changeTheme` function instead.
+
+```jsx {2}
+return (
+  <ThemeContext.Provider value={{ theme, changeTheme }}>
+    {children}
+  </ThemeContext.Provider>
+)
+```
+
+The final `ThemeProvider` component will look like this:
+
+```jsx
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(themes.light)
+
+  const saveThemeToLocalStorage = (key) => {
+    localStorage.setItem('appTheme', key)
+  }
+
+  const changeTheme = (key) => {
+    setTheme(themes[key])
+    saveThemeToLocalStorage(key)
+  }
+
+  useEffect(() => {
+    const localThemeKey = localStorage.getItem('appTheme')
+    if (localThemeKey && themes[localThemeKey]) {
+      setTheme(themes[localThemeKey])
+    }
+  }, [])
+
+  return (
+    <ThemeContext.Provider value={{ theme, changeTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+```
+
+With that changes, we are no longer passing the `setTheme` function to the
+context. Therefore, let's also remove the `setTheme` function and destructure
+the `changeTheme` from the `useTheme` hook inside the `src/App.jsx` file.
+
+Alter the `onClick` event handler to call the `changeTheme` function with the
+key as the argument.
+
+```jsx {2,13}
+const App = () => {
+  const { theme, changeTheme } = useTheme()
+
+  return (
+    <div className="app" style={{ backgroundColor: theme.background }}>
+      <h1 style={{ color: theme.color }}>Hello Context API</h1>
+      <div className="theme-container">
+        {Object.keys(themes).map((key) => {
+          return (
+            <div
+              key={key}
+              className="theme-item"
+              onClick={() => changeTheme(key)}
+              style={{ backgroundColor: themes[key].background }}
+            >
+              <span style={{ color: themes[key].color }}>{key}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+```
+
+### Extra: Adding more themes
+
+That's it! We've built a scalable and extensible theme system using the Context
+API.
+
+Now, if you want to add more themes, you can do so by adding as many themes as
+you want to the `themes` object. Everything else should work as it is.
+
+```jsx {14,15,16,17}
+const themes = {
+  light: {
+    background: '#eee',
+    color: '#333',
+  },
+  dark: {
+    background: '#111',
+    color: '#fff',
+  },
+  dim: {
+    background: '#15202b',
+    color: '#f9f8fe',
+  },
+  sky: {
+    background: '#548CFF',
+    color: '#fff',
+  },
+}
+```
+
+You can find the source code for this tutorial on
+[GitHub](https://github.com/iam-amanxz/react-theming-context-api/tree/final).
+
+Until next time… 🙌
