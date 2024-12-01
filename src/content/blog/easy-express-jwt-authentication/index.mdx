@@ -9,7 +9,7 @@ excerpt:  Learn how to implement a simple JWT token based authentication system 
 card_color: "#6EE7B7"
 ---
 
-// import BlogImage from '../../components/blogs/BlogImage.astro'
+import BlogImage from '../../../components/BlogImage.astro'
 
 In today's tutorial, we will be learning how to create a simple JWT
 authentication system with Express. I assume you have a little bit of knowledge
@@ -120,7 +120,7 @@ npm run dev
 
 Now you can see `nodemon` in action. This will start our server on port 3000.
 
-{/* <BlogImage src="/blog-images/nodemon-logs.webp" alt="nodemon logs" /> */}
+<BlogImage src="/blog-images/nodemon-logs.webp" alt="nodemon logs" />
 
 Now if we send a GET request to `http://localhost:3000` we should get the text
 `Hello World!`. Let's test it out by sending a `curl` request on the terminal.
@@ -253,7 +253,7 @@ variable using a package like [dotenv](https://www.npmjs.com/package/dotenv).
 Also if you want to quickly generate a strong and complex string for your JWT
 secret, you can make use of the built-in Node `crypto` library like so.
 
-{/* <BlogImage */}
+<BlogImage
   src="/blog-images/gen-crypto-string.webp"
   alt="generating complex string using crypto"
 />

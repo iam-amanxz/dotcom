@@ -1,0 +1,16 @@
+---
+export interface Props {
+  src: string;
+  alt: string;
+  maxWidth?: number;
+}
+
+const { src, alt, maxWidth } = Astro.props;
+---
+
+<img
+  src={src}
+  alt={alt}
+  class="mx-auto mb-3"
+  style={`max-width: ${maxWidth ? maxWidth + "px" : "100%"}`}
+/>
