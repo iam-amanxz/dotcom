@@ -1,6 +1,6 @@
 ---
 import ArticleCard from "./article-card.astro";
-import PageLink from "./page-link.astro";
+import PageLink from "./PageLink.astro";
 import { getCollection } from "astro:content";
 
 const recentPosts = await getCollection("blog", (post) => post.data.date).then(
