@@ -5,9 +5,11 @@ import Button from "./Button.astro";
 import ExternalBaseLink from "./ExternalBaseLink.astro";
 ---
 
-<div class="py-20 border-b-2 border-black">
-  <div class="mx-auto flex items-center container">
-    <div class="w-1/2">
+<div class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black">
+  <div
+    class="mx-auto flex md:items-center container flex-col md:flex-row gap-5"
+  >
+    <div class="md:w-1/2">
       <p class="font-bold uppercase mb-2">Hello, I am</p>
       <h1 class="font-black text-5xl mb-5 heading">
         Husnul, and I turn coffee into code.
@@ -23,7 +25,7 @@ import ExternalBaseLink from "./ExternalBaseLink.astro";
         <Button backgroundColor="#DBF07A">View Resume</Button>
       </ExternalBaseLink>
     </div>
-    <div class="w-1/2">
+    <div class="md:w-1/2">
       <Image src={HeroImage} alt="Hero Image" />
     </div>
   </div>

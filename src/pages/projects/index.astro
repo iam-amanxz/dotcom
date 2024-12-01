@@ -5,7 +5,7 @@ import projects from "../../data/projects.json";
 ---
 
 <BaseLayout title="Husnul Aman | Projects">
-  <div class="container py-16 space-y-10">
+  <div class="container px-5 md:px-0 py-16 space-y-10">
     <div class="space-y-3">
       <h1 class="heading font-black text-4xl">Projects</h1>
       <p>
@@ -15,7 +15,7 @@ import projects from "../../data/projects.json";
         problem-solving. Inspiration starts here!
       </p>
     </div>
-    <ul class="grid gap-5 grid-cols-3">
+    <ul class="grid gap-5 md:grid-cols-3">
       {
         projects.map((project) => (
           <li class="even:bg-slate-200">
