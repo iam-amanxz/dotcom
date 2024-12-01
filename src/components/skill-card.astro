@@ -1,0 +1,30 @@
+---
+import Chip from "./chip.astro";
+
+interface Props {
+  description: string;
+  title: string;
+  backgroundColor: string;
+  skills: string[];
+}
+
+const { description, title, skills, backgroundColor } = Astro.props;
+---
+
+<div
+  class="bounce border-black bg-white space-y-4 text-left p-10 border shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
+>
+  <div class="w-16 h-16 mb-5">
+    <div style={{ backgroundColor }} class="p-5 h-16 w-16 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-none">
+      <slot />
+    </div>
+  </div>
+
+  <h1 class="bounce heading text-xl mb-3 font-bold">{title}</h1>
+
+  <p class="bounce mb-3">{description}</p>
+
+  <div class="flex gap-2 flex-wrap">
+    {skills.map((skill) => <Chip text={skill} />)}
+  </div>
+</div>

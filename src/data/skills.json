@@ -1,0 +1,23 @@
+[
+  {
+    "image": "globe.svg",
+    "backgroundColor": "#92A8EC",
+    "title": "Web Development",
+    "description": "I build performance-rich, responsive, and secure web applications",
+    "skills": ["React", "Svelte", "Express", "NestJS", "Next.js", "Springboot"]
+  },
+  {
+    "image": "mobile.svg",
+    "backgroundColor": "#21A194",
+    "title": "Mobile Development",
+    "description": "I build performance-rich, native, and cross platform mobile apps",
+    "skills": ["Flutter", "React Native", "Kotlin"]
+  },
+  {
+    "image": "palette.svg",
+    "backgroundColor": "#E54C87",
+    "title": "UI/UX Design",
+    "description": "I create beautiful user interface designs, with a great user experience in mind",
+    "skills": ["Figma", "Adobe Illustrator", "Adobe Photoshop"]
+  }
+]

@@ -1,0 +1,29 @@
+---
+import ProjectCard from "../../components/project-card.astro";
+import BaseLayout from "../../layouts/base-layout.astro";
+import projects from "../../data/projects.json";
+import Button from "../../components/button.astro";
+---
+
+<BaseLayout title="Husnul Aman | Projects">
+  <div class="container py-16 space-y-10">
+    <div class="space-y-3">
+      <h1 class="heading font-black text-4xl">Projects</h1>
+      <p>
+        Step into my project showcase! Here, I bring ideas to life through web
+        and mobile development. Explore innovative solutions, creative builds,
+        and hands-on projects that reflect my passion for coding and
+        problem-solving. Inspiration starts here!
+      </p>
+    </div>
+    <ul class="grid gap-5 grid-cols-3">
+      {
+        projects.map((project) => (
+          <li class="even:bg-slate-200">
+            <ProjectCard data={project} showImage />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

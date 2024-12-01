@@ -1,9 +1,17 @@
 ---
-import Layout from "../layouts/Layout.astro";
-
-
+import Button from "../components/button.astro";
+import BaseLayout from "../layouts/base-layout.astro";
 ---
 
-<Layout title="Frontend Blog - Not Found">
-  <main>404 not found</main>
-</Layout>
+<BaseLayout>
+  <div class="container py-20 text-center">
+    <h1 class="section-title font-extrabold heading text-5xl mb-4">404</h1>
+    <h1 class="heading font-extrabold text-4xl mb-10">
+      Looks like you are lost!
+    </h1>
+
+    <a href="/">
+      <Button backgroundColor="#DBF07A">Go Back Home</Button>
+    </a>
+  </div>
+</BaseLayout>

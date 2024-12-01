@@ -1,0 +1,30 @@
+---
+import Chip from "./chip.astro";
+
+interface Props {
+  backgroundColor: string;
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+}
+
+const { backgroundColor, date, description, title, category } = Astro.props;
+---
+
+<div
+  style={{ backgroundColor }}
+  class="bounce border-black space-y-4 text-left p-10 border shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
+>
+  <Chip text={category} />
+
+  <p>{date}</p>
+
+  <h1 class="bounce text-2xl mb-4 heading font-semibold">{title}</h1>
+
+  <p class="bounce line-clamp-3">
+    {description}
+  </p>
+
+  <p class="font-semibold animated-link">Read More</p>
+</div>

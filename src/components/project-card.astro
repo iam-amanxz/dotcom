@@ -1,0 +1,72 @@
+---
+import Chip from "./chip.astro";
+import ProjectLink from "./project-link.astro";
+import { type Project } from "../types";
+import ExternalBaseLink from "./external-base-link.astro";
+
+interface Props {
+  data: Project;
+  showImage?: boolean;
+}
+
+const { data, showImage = false } = Astro.props;
+---
+
+<div
+  class="flex space-y-5 justify-between flex-col border-black text-left p-10 border hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
+>
+  <div class="space-y-3 flex flex-col">
+    {
+      showImage && (
+        <div class="aspect-w-16 aspect-h-10 border border-black">
+          <img class="object-cover" src={data.coverImage} alt={data.title} />
+        </div>
+      )
+    }
+
+    <Chip text={data.category!} backgroundColor="#DBF07A" />
+
+    <h1 class="text-2xl heading font-semibold bounce">
+      {data.title}
+    </h1>
+
+    <p class="line-clamp-3 ease-linear bounce">
+      {data.description}
+    </p>
+
+    <div class="flex gap-2 flex-wrap">
+      {data.tags?.map((tag) => <p class="text-sm text-slate-500">{tag}</p>)}
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    {
+      data.hostedUrl && (
+        <ExternalBaseLink href={data.hostedUrl}>
+          <ProjectLink>View</ProjectLink>
+        </ExternalBaseLink>
+      )
+    }
+    {
+      data.demoUrl && (
+        <ExternalBaseLink href={data.demoUrl}>
+          <ProjectLink>Demo</ProjectLink>
+        </ExternalBaseLink>
+      )
+    }
+    {
+      data.githubUrl && (
+        <ExternalBaseLink href={data.githubUrl}>
+          <ProjectLink>Github</ProjectLink>
+        </ExternalBaseLink>
+      )
+    }
+    {
+      data.dribbbleUrl && (
+        <ExternalBaseLink href={data.dribbbleUrl}>
+          <ProjectLink>Dribble</ProjectLink>
+        </ExternalBaseLink>
+      )
+    }
+  </div>
+</div>

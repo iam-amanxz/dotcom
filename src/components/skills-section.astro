@@ -1,0 +1,31 @@
+---
+import SkillCard from "./skill-card.astro";
+import skills from "../data/skills.json";
+import Svg1 from "../assets/svg/globe.svg";
+import Svg2 from "../assets/svg/mobile.svg";
+import Svg3 from "../assets/svg/palette.svg";
+---
+
+<div class="py-20 border-b-2 border-black bg-[#EAD5C1]">
+  <div class="mx-auto container text-center">
+    <h1 class="heading font-black text-5xl mb-10">Skills</h1>
+
+    <div class="grid grid-cols-3 gap-5">
+      {
+        skills.map((skill, index) => (
+          <SkillCard
+            backgroundColor={skill.backgroundColor}
+            title={skill.title}
+            description={skill.description}
+            skills={skill.skills}
+          >
+            <img
+              src={index === 0 ? Svg1.src : index === 1 ? Svg2.src : Svg3.src}
+              alt={skill.title}
+            />
+          </SkillCard>
+        ))
+      }
+    </div>
+  </div>
+</div>

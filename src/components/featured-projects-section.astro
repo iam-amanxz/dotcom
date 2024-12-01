@@ -1,0 +1,21 @@
+---
+import PageLink from "./page-link.astro";
+import ProjectCard from "./project-card.astro";
+import projects from "../data/projects.json";
+---
+
+<div class="py-20 border-b-2 border-black">
+  <div class="mx-auto container text-center">
+    <h1 class="heading font-black text-4xl mb-10">Some of my works</h1>
+
+    <div class="grid grid-cols-3 mb-10 shadow-[5px_5px_0px_rgba(0,0,0,1)]">
+      {
+        projects
+          .filter((project) => !!project.isFeatured)
+          .map((project) => <ProjectCard data={project} />)
+      }
+    </div>
+
+    <PageLink href="/projects" title="See more projects" />
+  </div>
+</div>

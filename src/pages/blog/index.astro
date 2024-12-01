@@ -1,24 +1,36 @@
 ---
-import BlogCard from "../../components/BlogCard.astro";
-import Layout from "../../layouts/Layout.astro";
+import ArticleCard from "../../components/article-card.astro";
+import BaseLayout from "../../layouts/base-layout.astro";
 import { getCollection } from "astro:content";
 
 const posts = await getCollection("blog");
 ---
 
-<Layout title="Blog">
-  <div class="px-10 py-20 grid grid-cols-4 gap-5">
-    {
-      posts.map((post) => (
-        <a href={"/blog/" + post.slug}>
-          <BlogCard
-            title={post.data.title}
-            description={post.data.excerpt}
-            date={post.data.date.toDateString()}
-            backgroundColor={post.data.card_color || "#A5B4FB"}
-          />
-        </a>
-      ))
-    }
+<BaseLayout title="Husnul Aman | Blog">
+  <div class="container py-16 space-y-10">
+    <div class="space-y-3">
+      <h1 class="heading font-black text-4xl">Husnul's Blog</h1>
+      <p>
+        Welcome to my personal tech haven! I share insights, tips, and tutorials
+        on web and mobile development, blending my passion for coding with a
+        knack for problem-solving. Whether you're here to learn, explore, or get
+        inspired, there's something for every tech enthusiast.
+      </p>
+    </div>
+    <div class="grid gap-5 container grid-cols-3">
+      {
+        posts.map((post) => (
+          <a href={"/blog/" + post.slug}>
+            <ArticleCard
+              category={post.data.category}
+              title={post.data.title}
+              description={post.data.excerpt}
+              date={post.data.date.toDateString()}
+              backgroundColor={post.data.card_color || "#A5B4FB"}
+            />
+          </a>
+        ))
+      }
+    </div>
   </div>
-</Layout>
+</BaseLayout>

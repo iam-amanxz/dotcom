@@ -1,20 +1,16 @@
 ---
-import Hero from "../components/Hero.astro";
-import LatestArticles from "../components/LatestArticles.astro";
-import MoreAboutMe from "../components/MoreAboutMe.astro";
-import Skills from "../components/Skills.astro";
-import Projects from "../components/Projects.astro";
-import Contact from "../components/Contact.astro";
-import Something from "../components/Something.astro";
-import Layout from "../layouts/Layout.astro";
+import BaseLayout from "../layouts/base-layout.astro";
+import HeroSection from "../components/hero-section.astro";
+import LatestArticlesSection from "../components/latest-articles-section.astro";
+import FeaturedProjectsSection from "../components/featured-projects-section.astro";
+import SkillsSection from "../components/skills-section.astro";
+import ContactSection from "../components/contact-section.astro";
 ---
 
-<Layout title="Husnul Aman">
-  <Hero />
-  <LatestArticles />
-  <MoreAboutMe />
-  <Something />
-  <Skills />
-  <Projects />
-  <Contact />
-</Layout>
+<BaseLayout>
+  <HeroSection />
+  <LatestArticlesSection />
+  <FeaturedProjectsSection />
+  <SkillsSection />
+  <ContactSection />
+</BaseLayout>

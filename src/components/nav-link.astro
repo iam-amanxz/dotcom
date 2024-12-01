@@ -1,0 +1,17 @@
+---
+export interface Props {
+  href: string;
+  title: string;
+  isActive?: boolean;
+}
+
+const { href, title, isActive } = Astro.props;
+---
+
+<a
+  class:list={[{ active: isActive }]}
+  class="animated-link font-semibold text-sm tracking-wide"
+  href={href}
+>
+  {title}
+</a>

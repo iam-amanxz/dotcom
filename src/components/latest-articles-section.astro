@@ -1,23 +1,25 @@
 ---
-import BlogCard from "./BlogCard.astro";
+import ArticleCard from "./article-card.astro";
+import PageLink from "./page-link.astro";
 import { getCollection } from "astro:content";
 
 const recentPosts = await getCollection("blog", (post) => post.data.date).then(
-  (posts) => posts.slice(0, 4)
+  (posts) => posts.slice(0, 3)
 );
 ---
 
-<div class="px-10 py-20">
-  <div class="mx-auto">
-    <h1 class="heading font-black text-5xl mb-10 text-center">
+<div class="py-20 border-b-2 border-black bg-[#D1C1EA]">
+  <div class="mx-auto container text-center">
+    <h1 class="heading font-black text-4xl mb-10 text-center">
       Latest Articles
     </h1>
 
-    <div class="grid grid-cols-4 gap-5">
+    <div class="grid grid-cols-3 gap-5 mb-10">
       {
         recentPosts.map((post) => (
           <a href={"/blog/" + post.slug}>
-            <BlogCard
+            <ArticleCard
+              category={post.data.category}
               title={post.data.title}
               description={post.data.excerpt}
               date={post.data.date.toDateString()}
@@ -27,5 +29,7 @@ const recentPosts = await getCollection("blog", (post) => post.data.date).then(
         ))
       }
     </div>
+
+    <PageLink href="/blog" title="Read more articles" />
   </div>
 </div>

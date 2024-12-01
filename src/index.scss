@@ -1,0 +1,38 @@
+:root {
+  --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-long-bounce: 0.5s var(--easing-bounce);
+}
+
+html {
+  font-family: "Inter Variable", sans-serif;
+  scroll-behavior: smooth;
+}
+
+.heading {
+  font-family: "Sora Variable", sans-serif;
+}
+
+.animated-link {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background-color: currentColor;
+    transition: width 0.3s ease-in-out;
+  }
+  &:hover::after,
+  &.active::after {
+    width: 100%;
+  }
+}
+
+.bounce {
+  transition: all var(--transition-long-bounce);
+  &:hover {
+    transform: translate3d(0, 5px, 0);
+  }
+}

@@ -1,0 +1,20 @@
+---
+import ExternalBaseLink from "./external-base-link.astro";
+
+export interface Props {
+  href: string;
+  title: string;
+}
+
+const { href, title } = Astro.props;
+---
+
+<li>
+  <ExternalBaseLink href={href}>
+    <p
+      class="text-sm animated-link uppercase font-semibold tracking-wide"
+    >
+      {title}
+    </p>
+  </ExternalBaseLink>
+</li>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  text: string;
+  backgroundColor?: string;
+}
+
+const { text, backgroundColor = "#FFF" } = Astro.props;
+---
+
+<span
+  style={{ backgroundColor }}
+  class="border font-medium text-xs border-black py-0.5 px-1 w-max shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none"
+>
+  {text}
+</span>

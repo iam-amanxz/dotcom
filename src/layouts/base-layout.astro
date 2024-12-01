@@ -1,0 +1,61 @@
+---
+import "../index.scss";
+import "@fontsource-variable/sora";
+import "@fontsource-variable/open-sans";
+import "@fontsource-variable/inter";
+import Header from "../components/header.astro";
+import Footer from "../components/footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = "Husnul Aman | Full Stack Developer",
+  description = "Designer, developer and dreamer. This is my personal portoflio.",
+  image,
+} = Astro.props;
+const siteImage = image
+  ? `${Astro.site?.href}${image.substring(1)}`
+  : Astro.site?.href + "cover.png";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Global Metadata -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={siteImage} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url.href} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={siteImage} />
+  </head>
+
+  <body class="min-h-screen w-screen flex flex-col">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
