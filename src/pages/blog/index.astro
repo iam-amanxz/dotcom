@@ -9,8 +9,10 @@ const posts = await getCollection("blog");
 <BaseLayout title="Husnul Aman | Blog">
   <div class="container px-5 md:px-0 py-16 space-y-10">
     <div class="space-y-3">
-      <h1 class="heading font-black text-4xl">Husnul's Blog</h1>
-      <p>
+      <h1 class="heading font-black text-4xl" data-aos="fade-right">
+        Husnul's Blog
+      </h1>
+      <p data-aos="fade-right" data-aos-delay="100">
         Welcome to my personal tech haven! I share insights, tips, and tutorials
         on web and mobile development, blending my passion for coding with a
         knack for problem-solving. Whether you're here to learn, explore, or get
@@ -19,8 +21,12 @@ const posts = await getCollection("blog");
     </div>
     <div class="grid gap-5 container md:grid-cols-3">
       {
-        posts.map((post) => (
-          <a href={"/blog/" + post.slug}>
+        posts.map((post, index) => (
+          <a
+            href={"/blog/" + post.slug}
+            data-aos="fade-right"
+            data-aos-delay={(index + 1) * 10}
+          >
             <ArticleCard
               category={post.data.category}
               title={post.data.title}

@@ -8,14 +8,23 @@ import projects from "../data/projects.json";
   <div class="mx-auto container text-center">
     <h1 class="heading font-black text-4xl mb-10">Some of my works</h1>
 
-    <div class="grid md:grid-cols-3 mb-10 shadow-[5px_5px_0px_rgba(0,0,0,1)]">
+    <div
+      class="grid md:grid-cols-3 mb-10 shadow-[5px_5px_0px_rgba(0,0,0,1)]"
+      data-aos="fade-right"
+    >
       {
         projects
           .filter((project) => !!project.isFeatured)
-          .map((project) => <ProjectCard data={project} />)
+          .map((project) => (
+            <span>
+              <ProjectCard data={project} />
+            </span>
+          ))
       }
     </div>
 
-    <PageLink href="/projects" title="See more projects" />
+    <span data-aos="fade-right">
+      <PageLink href="/projects" title="See more projects" />
+    </span>
   </div>
 </div>

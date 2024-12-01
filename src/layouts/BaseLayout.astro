@@ -5,6 +5,7 @@ import "@fontsource-variable/open-sans";
 import "@fontsource-variable/inter";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { ViewTransitions } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -25,6 +26,8 @@ const siteImage = image
 <!doctype html>
 <html lang="en">
   <head>
+    <ViewTransitions />
+
     <!-- Global Metadata -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -49,6 +52,17 @@ const siteImage = image
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={siteImage} />
+
+    <!-- AOS -->
+    <!-- AOS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
+    <script is:inline type="module" defer>
+      AOS.init({
+        offset: 0,
+        anchorPlacement: "top-bottom",
+      });
+    </script>
   </head>
 
   <body class="min-h-screen w-screen flex flex-col">

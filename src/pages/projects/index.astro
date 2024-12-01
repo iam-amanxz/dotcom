@@ -7,8 +7,10 @@ import projects from "../../data/projects.json";
 <BaseLayout title="Husnul Aman | Projects">
   <div class="container px-5 md:px-0 py-16 space-y-10">
     <div class="space-y-3">
-      <h1 class="heading font-black text-4xl">Projects</h1>
-      <p>
+      <h1 class="heading font-black text-4xl" data-aos="fade-right">
+        Projects
+      </h1>
+      <p data-aos="fade-right" data-aos-delay="100">
         Step into my project showcase! Here, I bring ideas to life through web
         and mobile development. Explore innovative solutions, creative builds,
         and hands-on projects that reflect my passion for coding and
@@ -17,8 +19,12 @@ import projects from "../../data/projects.json";
     </div>
     <ul class="grid gap-5 md:grid-cols-3">
       {
-        projects.map((project) => (
-          <li class="even:bg-slate-200">
+        projects.map((project, index) => (
+          <li
+            class="even:bg-slate-200"
+            data-aos="fade-right"
+            data-aos-delay={(index + 1) * 10}
+          >
             <ProjectCard data={project} showImage />
           </li>
         ))
