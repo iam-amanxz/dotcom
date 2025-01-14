@@ -4,7 +4,7 @@ import Chip from "./Chip.astro";
 interface Props {
   backgroundColor: string;
   title: string;
-  description: string;
+  description?: string;
   date: string;
   category: string;
 }
@@ -22,9 +22,7 @@ const { backgroundColor, date, description, title, category } = Astro.props;
 
   <h1 class="bounce text-2xl mb-4 heading font-semibold">{title}</h1>
 
-  <p class="bounce line-clamp-3">
-    {description}
-  </p>
+  {description && <p class="bounce line-clamp-3">{description}</p>}
 
   <p class="font-semibold animated-link">Read More</p>
 </div>

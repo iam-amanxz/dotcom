@@ -11,7 +11,7 @@ const postsCollection = defineCollection({
       tags: z.array(z.string()),
       read_time: z.string(),
       cover_image: image().optional(),
-      excerpt: z.string(),
+      excerpt: z.string().optional(),
       card_color: z.string().nullable(),
     }),
 });
