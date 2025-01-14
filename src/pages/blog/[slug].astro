@@ -50,11 +50,13 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <div class="px-10 py-20">
     <article class="prose mx-auto">
-      <Image
-        src={post.data.cover_image}
-        alt={post.data.title}
-        class="object-cover object-center !m-0 aspect-video block"
-      />
+      {post.data.cover_image && (
+        <Image
+          src={post.data.cover_image}
+          alt={post.data.title}
+          class="object-cover object-center !m-0 aspect-video block"
+        />
+      )}
       <h1 class="md:!text-5xl md:!leading-[1.2] heading mt-5">
         {post.data.title}
       </h1>

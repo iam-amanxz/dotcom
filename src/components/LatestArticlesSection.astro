@@ -3,9 +3,10 @@ import ArticleCard from "./article-card.astro";
 import PageLink from "./PageLink.astro";
 import { getCollection } from "astro:content";
 
-const recentPosts = await getCollection("blog", (post) => post.data.date).then(
-  (posts) => posts.slice(0, 3)
-);
+const posts = await getCollection("blog");
+const recentPosts = posts
+  .sort((a, b) => (b.data.date as any) - (a.data.date as any))
+  .slice(0, 3);
 ---
 
 <div class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black bg-[#D1C1EA]">

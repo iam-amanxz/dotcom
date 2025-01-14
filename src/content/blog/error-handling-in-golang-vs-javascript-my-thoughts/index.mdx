@@ -1,0 +1,159 @@
+---
+title: Error Handling in Golang vs JavaScript - My Thoughts
+date: 2025-01-14
+category: Programming
+tags: [golang, javascript]
+read_time: 3 min
+excerpt:  Error Handling in Golang vs JavaScript - My Thoughts
+card_color: "#A5B4FB"
+---
+
+Golang is one of the most loved programming languages and relatively easy to learn. However, its error-handling pattern has sparked significant debate among developers. Unlike many other languages, Go does not throw errors and let the caller or other functions in the call stack deal with them. Instead, errors in Go are treated as actual values and are returned from functions alongside their primary return value. This means you have to handle errors immediately when calling the functions.  
+
+Here’s a typical example of error handling in Go:  
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func divide(a, b int) (int, error) {
+	if b == 0 {
+		return 0, errors.New("cannot divide by zero")
+	}
+	return a / b, nil
+}
+
+func main() {
+	result, err := divide(10, 0)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println("Result:", result)
+}
+```
+
+The simplicity of Go's error handling lies in its explicit nature: you *must* handle the error right away. This ensures no error is accidentally ignored.  
+
+---
+
+### Error Handling in JavaScript  
+
+In contrast, JavaScript typically handles errors using `try-catch`. Errors can be thrown and propagated up the call stack, which can be caught later or handled by a global error handler. For example:  
+
+```javascript
+function divide(a, b) {
+  if (b === 0) {
+    throw new Error("Cannot divide by zero");
+  }
+  return a / b;
+}
+
+try {
+  const result = divide(10, 0);
+  console.log("Result:", result);
+} catch (err) {
+  console.error("Error:", err.message);
+}
+```
+
+This works well, but it has some drawbacks:
+- You need to remember to wrap risky operations in `try-catch`.
+- Passing stack traces and context can be tricky without additional tooling.
+
+---
+
+### Adopting Golang's Pattern in JavaScript  
+
+Interestingly, many JavaScript developers have started using Golang’s error-handling style by returning `[error, value]` tuples. Here's how this looks:  
+
+```javascript
+function divide(a, b) {
+  if (b === 0) {
+    return [new Error("Cannot divide by zero"), null];
+  }
+  return [null, a / b];
+}
+
+const [err, result] = divide(10, 0);
+if (err) {
+  console.error("Error:", err.message);
+} else {
+  console.log("Result:", result);
+}
+```
+
+This approach ensures errors are always handled immediately, just like in Go.
+
+---
+
+### Handling Asynchronous Code  
+
+In JavaScript, asynchronous code adds complexity. A `Promise`-based function might look like this:  
+
+```javascript
+async function fetchData() {
+  throw new Error("Failed to fetch data");
+}
+
+try {
+  const data = await fetchData();
+  console.log("Data:", data);
+} catch (err) {
+  console.error("Error:", err.message);
+}
+```
+
+If you want to adopt the `[error, value]` pattern for async functions, you can use a utility function:  
+
+```javascript
+const to = (promise) => promise.then(data => [null, data]).catch(err => [err]);
+
+(async () => {
+  const [err, data] = await to(fetchData());
+  if (err) {
+    console.error("Error:", err.message);
+    return;
+  }
+  console.log("Data:", data);
+})();
+```
+
+This keeps the error-handling logic consistent, but as the complexity of async operations grows, the `try-catch` approach may feel cleaner.
+
+---
+
+### My Take  
+
+For me, the `[error, value]` pattern works well for pure and simple utility functions, where it ensures I always handle errors. For example:  
+
+```javascript
+function parseJSON(jsonStr) {
+  try {
+    return [null, JSON.parse(jsonStr)];
+  } catch (err) {
+    return [err, null];
+  }
+}
+
+const [err, obj] = parseJSON('invalid json');
+if (err) {
+  console.error("Failed to parse JSON:", err.message);
+} else {
+  console.log("Parsed object:", obj);
+}
+```
+
+However, for asynchronous and more complex functions, I still lean toward `try-catch` and global error handling to avoid cluttering the codebase with repetitive error checks.  
+
+---
+
+### Striking a Balance  
+
+To balance both approaches, I use Golang's style for synchronous utility functions and stick to `try-catch` for complex or async logic. Additionally, I leverage global error handlers for critical errors, ensuring they’re logged and tracked without overwhelming my code.  
+
+Ultimately, error handling is about consistency and what fits best for your team and project. For now, I’ll keep experimenting with these patterns and refine my approach as I go.  

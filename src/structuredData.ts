@@ -51,10 +51,10 @@ export function getArticleSchema(post: CollectionEntry<"blog">) {
     url: `${import.meta.env.SITE}/blog/${post.slug}/`,
     image: {
       "@type": "ImageObject",
-      url: `${import.meta.env.SITE}${post.data.cover_image.src}/`,
+      url: `${import.meta.env.SITE}${post.data.cover_image?.src}/`,
     },
     description: post.data.excerpt,
-    datePublished: post.data.date.toString(),
+    datePublished: post.data.date?.toString(),
     publisher: {
       "@type": "Person",
       name: "Husnul Aman",

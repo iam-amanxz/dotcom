@@ -21,21 +21,23 @@ const posts = await getCollection("blog");
     </div>
     <div class="grid gap-5 container md:grid-cols-3">
       {
-        posts.map((post, index) => (
-          <a
-            href={"/blog/" + post.slug}
-            data-aos="fade-right"
-            data-aos-delay={(index + 1) * 10}
-          >
-            <ArticleCard
-              category={post.data.category}
-              title={post.data.title}
-              description={post.data.excerpt}
-              date={post.data.date.toDateString()}
-              backgroundColor={post.data.card_color || "#A5B4FB"}
-            />
-          </a>
-        ))
+        posts
+          .sort((a, b) => (b.data.date as any) - (a.data.date as any))
+          .map((post, index) => (
+            <a
+              href={"/blog/" + post.slug}
+              data-aos="fade-right"
+              data-aos-delay={(index + 1) * 10}
+            >
+              <ArticleCard
+                category={post.data.category}
+                title={post.data.title}
+                description={post.data.excerpt}
+                date={post.data.date.toDateString()}
+                backgroundColor={post.data.card_color || "#A5B4FB"}
+              />
+            </a>
+          ))
       }
     </div>
   </div>
