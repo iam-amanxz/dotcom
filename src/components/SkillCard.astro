@@ -12,7 +12,7 @@ const { description, title, skills, backgroundColor } = Astro.props;
 ---
 
 <div
-  class="bounce border-black bg-white space-y-4 text-left p-10 border shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
+  class="bounce border-black bg-[var(--surface-skill-card)] space-y-4 text-left p-10 border shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
 >
   <div class="w-16 h-16 mb-5">
     <div style={{ backgroundColor }} class="p-5 h-16 w-16 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-none">
@@ -20,9 +20,9 @@ const { description, title, skills, backgroundColor } = Astro.props;
     </div>
   </div>
 
-  <h1 class="bounce heading text-xl mb-3 font-bold">{title}</h1>
+  <h1 class="bounce heading text-xl mb-3 font-bold text-[var(--clr-fg-dark)]">{title}</h1>
 
-  <p class="bounce mb-3">{description}</p>
+  <p class="bounce mb-3 text-[var(--clr-fg-medium)]">{description}</p>
 
   <div class="flex gap-2 flex-wrap">
     {skills.map((skill) => <Chip text={skill} />)}

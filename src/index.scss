@@ -1,6 +1,32 @@
 :root {
   --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --transition-long-bounce: 0.5s var(--easing-bounce);
+
+
+  // theme
+  --clr-fg-dark: hsl(0, 0%, 10%);
+  --clr-fg-medium: hsl(0, 0%, 20%);
+  --clr-fg-light: hsl(0, 0%, 30%);
+
+  --surface-1: hsl(0, 0%, 100%);
+  --surface-2: hsl(263, 49%, 84%);
+  --surface-3: hsl(30, 48%, 84%);
+  --surface-skill-card: hsl(0, 0%, 100%);
+  --surface-project-card: hsl(0, 0%, 100%);
+
+}
+
+.dark {
+  // theme
+  --clr-fg-dark: hsl(0, 0%, 90%);
+  --clr-fg-medium: hsl(0, 0%, 70%);
+  --clr-fg-light: hsl(0, 0%, 50%);
+  
+  --surface-1: hsl(0, 0%, 10%);
+  --surface-2: hsl(0, 0%, 15%);
+  --surface-3: hsl(0, 0%, 15%);
+  --surface-skill-card: hsl(0, 0%, 10%);
+  --surface-project-card: hsl(0, 0%, 15%);
 }
 
 html {

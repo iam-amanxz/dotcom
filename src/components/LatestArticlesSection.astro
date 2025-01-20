@@ -1,5 +1,5 @@
 ---
-import ArticleCard from "./article-card.astro";
+import ArticleCard from "./ArticleCard.astro";
 import PageLink from "./PageLink.astro";
 import { getCollection } from "astro:content";
 
@@ -9,10 +9,10 @@ const recentPosts = posts
   .slice(0, 3);
 ---
 
-<div class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black bg-[#D1C1EA]">
+<div class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black bg-[var(--surface-2)]">
   <div class="mx-auto container text-center">
     <h1
-      class="heading font-black text-4xl mb-10 text-center"
+      class="heading font-black text-4xl mb-10 text-center text-[var(--clr-fg-dark)]"
       data-aos="fade-right"
     >
       Latest Articles

@@ -13,7 +13,7 @@ const { data, showImage = false } = Astro.props;
 ---
 
 <div
-  class="flex space-y-5 justify-between flex-col border-black text-left p-10 border hover:shadow-none h-full transition-shadow duration-300 ease-in-out"
+  class="flex space-y-5 justify-between flex-col border-black text-left p-10 border hover:shadow-none h-full transition-shadow duration-300 ease-in-out bg-[var(--surface-project-card)]"
 >
   <div class="space-y-3 flex flex-col">
     {
@@ -26,16 +26,16 @@ const { data, showImage = false } = Astro.props;
 
     <Chip text={data.category!} backgroundColor="#DBF07A" />
 
-    <h1 class="text-2xl heading font-semibold bounce">
+    <h1 class="text-2xl heading font-semibold bounce text-[var(--clr-fg-dark)]">
       {data.title}
     </h1>
 
-    <p class="line-clamp-3 ease-linear bounce">
+    <p class="line-clamp-3 ease-linear bounce text-[var(--clr-fg-medium)]">
       {data.description}
     </p>
 
     <div class="flex gap-2 flex-wrap">
-      {data.tags?.map((tag) => <p class="text-sm text-slate-500">{tag}</p>)}
+      {data.tags?.map((tag) => <p class="text-sm text-[var(--clr-fg-light)]">{tag}</p>)}
     </div>
   </div>
 

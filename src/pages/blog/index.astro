@@ -1,5 +1,5 @@
 ---
-import ArticleCard from "../../components/article-card.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
@@ -9,10 +9,10 @@ const posts = await getCollection("blog");
 <BaseLayout title="Husnul Aman | Blog">
   <div class="container px-5 md:px-0 py-16 space-y-10">
     <div class="space-y-3">
-      <h1 class="heading font-black text-4xl" data-aos="fade-right">
+      <h1 class="heading font-black text-4xl text-[var(--clr-fg-dark)]" data-aos="fade-right">
         Husnul's Blog
       </h1>
-      <p data-aos="fade-right" data-aos-delay="100">
+      <p class="text-[var(--clr-fg-medium)]" data-aos="fade-right" data-aos-delay="100">
         Welcome to my personal tech haven! I share insights, tips, and tutorials
         on web and mobile development, blending my passion for coding with a
         knack for problem-solving. Whether you're here to learn, explore, or get
