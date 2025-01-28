@@ -1,0 +1,89 @@
+---
+title: Running a Large Language Model Locally with Ollama
+date: 2025-01-28
+category: Technology
+tags: [ai, llm]
+read_time: 3 min
+excerpt: Learn how to run a large language model (LLM) locally using Ollama and Llama3.2. This step-by-step guide covers installation, model interaction, and programmatic access via REST APIs or SDKs. Perfect for developers and AI enthusiasts exploring offline LLMs
+card_color: "#FDA5A5"
+---
+
+In this blog post, we'll explore how to run a large language model (LLM) locally using Ollama, a tool that simplifies the process of downloading, managing, and running open-source LLMs on your machine. Specifically, we'll focus on running the `llama3.2` model. Whether you're a developer, researcher, or just curious about AI, this guide will help you get started quickly.
+
+## Why Run an LLM Locally?
+
+Running an LLM locally has several advantages:
+
+- Privacy: Your data stays on your machine.
+- Customization: You can fine-tune and experiment with models without relying on cloud services.
+- Offline Access: No internet connection is required once the model is downloaded.
+- Cost-Effective: Avoid cloud hosting fees for large-scale usage.
+- Ollama makes this process seamless by providing a Docker-like CLI for managing LLMs.
+
+## Step 1: Install Ollama
+1. Visit the official Ollama website: [https://ollama.com](https://ollama.com).
+2. Download the Ollama application for your operating system (Windows, macOS, or Linux).
+3. Follow the installation instructions for your OS.
+Once installed, Ollama will be ready to use via the command line.
+
+## Step 2: Run Llama3.2 Locally
+To run the `llama3.2` model, open your terminal or command prompt and enter the following command:
+```sh
+ollama run llama3.2
+```
+
+Here's what happens:
+
+- If the `llama3.2` model isn't already downloaded, Ollama will pull it from the registry.
+- Once downloaded, the model will start running, and you'll be dropped into a REPL (Read-Eval-Print Loop) interface.
+- You can now interact with the model directly by typing prompts and receiving responses.
+
+For example:
+```sh
+>>> What is the capital of France?
+The capital of France is Paris.
+```
+
+## Step 3: Explore Other Models
+Ollama supports a variety of open-source models. You can browse the available models on the Ollama Library. To run a different model, simply replace `llama3.2` with the desired model name in the `ollama run` command.
+
+For example, to run the `mistral` model:
+
+```sh
+ollama run mistral
+```
+
+## Interacting with Ollama Programmatically
+Ollama runs an HTTP server in the background, allowing you to interact with the model programmatically. You can use REST APIs or the Ollama SDK for your preferred programming language.
+
+### Using REST API
+By default, Ollama's HTTP server runs on `localhost:11434`. You can send HTTP requests to interact with the model. Here's an example using curl:
+
+```sh
+curl http://localhost:11434/api/chat -d '{
+  "model": "llama3.2",
+  "messages": [
+    { "role": "user", "content": "why is the sky blue?" }
+  ]
+}'
+```
+
+### Using Ollama SDK
+Ollama provides SDKs for popular programming languages like Python, JavaScript, and Go. For example, in Python:
+```py
+from ollama import chat
+
+stream = chat(
+    model='llama3.2',
+    messages=[{'role': 'user', 'content': 'Why is the sky blue?'}],
+    stream=True,
+)
+
+for chunk in stream:
+  print(chunk['message']['content'], end='', flush=True)
+```
+
+## Conclusion
+Running a large language model locally has never been easier, thanks to tools like Ollama. With just a few commands, you can download, manage, and interact with powerful models like `llama3.2`. Whether you're experimenting, building applications, or conducting research, Ollama provides a flexible and user-friendly platform for working with LLMs.
+
+Ready to get started? Head over to [https://ollama.com](https://ollama.com), download the application, and start exploring the world of local LLMs today!
