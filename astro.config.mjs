@@ -1,5 +1,5 @@
 // @ts-check
-import { SITE } from "@/config";
+import { SITE } from "./src/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
