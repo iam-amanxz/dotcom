@@ -1,7 +1,6 @@
 ---
 import "../index.scss";
 import "@fontsource-variable/sora";
-import "@fontsource-variable/open-sans";
 import "@fontsource-variable/inter";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -55,10 +54,7 @@ const siteImage = image
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
     <script is:inline type="module" defer>
-      AOS.init({
-        offset: 0,
-        anchorPlacement: "top-bottom",
-      });
+      AOS.init({ offset: 0, anchorPlacement: "top-bottom" });
     </script>
   </head>
 

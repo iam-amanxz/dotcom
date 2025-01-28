@@ -22,7 +22,7 @@ const posts = await getCollection("blog");
     <div class="grid gap-5 container md:grid-cols-3">
       {
         posts
-          .sort((a, b) => (b.data.date as any) - (a.data.date as any))
+          .sort((a, b) => (b.data.publishedDate as any) - (a.data.publishedDate as any))
           .map((post, index) => (
             <a
               href={"/blog/" + post.slug}
@@ -33,8 +33,8 @@ const posts = await getCollection("blog");
                 category={post.data.category}
                 title={post.data.title}
                 description={post.data.excerpt}
-                date={post.data.date.toDateString()}
-                backgroundColor={post.data.card_color || "#A5B4FB"}
+                publishedDate={post.data.publishedDate.toDateString()}
+                backgroundColor={post.data.cardColor || "#A5B4FB"}
               />
             </a>
           ))

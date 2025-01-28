@@ -6,6 +6,7 @@ import {
 } from "schema-dts";
 import avatar from "../public/favicon.svg";
 import type { CollectionEntry } from "astro:content";
+import { SITE } from "./config";
 
 export const blogWebsite: WithContext<WebSite> = {
   "@context": "https://schema.org",
@@ -36,11 +37,6 @@ export const personSchema: WithContext<Person> = {
     "https://www.linkedin.com/in/iam-amanxz97",
   ],
   jobTitle: "Full Stack Developer",
-  worksFor: {
-    "@type": "Organization",
-    name: "Grafana",
-    url: "https://grafana.com",
-  },
 };
 
 export function getArticleSchema(post: CollectionEntry<"blog">) {
@@ -51,10 +47,12 @@ export function getArticleSchema(post: CollectionEntry<"blog">) {
     url: `${import.meta.env.SITE}/blog/${post.slug}/`,
     image: {
       "@type": "ImageObject",
-      url: `${import.meta.env.SITE}${post.data.cover_image?.src}/`,
+      url: post.data.coverImage
+        ? `${import.meta.env.SITE}${post.data.coverImage?.src}/`
+        : SITE.ogImage,
     },
     description: post.data.excerpt,
-    datePublished: post.data.date?.toString(),
+    datePublished: post.data.publishedDate?.toString(),
     publisher: {
       "@type": "Person",
       name: "Husnul Aman",

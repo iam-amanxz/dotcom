@@ -1,6 +1,6 @@
 ---
+import { NAV_LINKS } from "@/config";
 import NavLink from "./NavLink.astro";
-import navLinks from "../data/nav-links.json";
 import ThemeIcon from "./ThemeIcon.astro";
 ---
 
@@ -15,7 +15,7 @@ import ThemeIcon from "./ThemeIcon.astro";
     >
     <div class="flex gap-5 uppercase text-sm font-semibold items-center">
       {
-        Object.entries(navLinks).map(([title, href]) => (
+        Object.entries(NAV_LINKS).map(([title, href]) => (
           <NavLink
             href={href}
             title={title}

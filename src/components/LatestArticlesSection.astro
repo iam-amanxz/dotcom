@@ -5,11 +5,13 @@ import { getCollection } from "astro:content";
 
 const posts = await getCollection("blog");
 const recentPosts = posts
-  .sort((a, b) => (b.data.date as any) - (a.data.date as any))
+  .sort((a, b) => (b.data.publishedDate as any) - (a.data.publishedDate as any))
   .slice(0, 3);
 ---
 
-<div class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black bg-[var(--surface-2)]">
+<div
+  class="py-16 md:py-20 px-5 md:px-0 border-b-2 border-black bg-[var(--surface-2)]"
+>
   <div class="mx-auto container text-center">
     <h1
       class="heading font-black text-4xl mb-10 text-center text-[var(--clr-fg-dark)]"
@@ -30,8 +32,8 @@ const recentPosts = posts
               category={post.data.category}
               title={post.data.title}
               description={post.data.excerpt}
-              date={post.data.date.toDateString()}
-              backgroundColor={post.data.card_color || "#A5B4FB"}
+              publishedDate={post.data.publishedDate.toDateString()}
+              backgroundColor={post.data.cardColor || "#A5B4FB"}
             />
           </a>
         ))

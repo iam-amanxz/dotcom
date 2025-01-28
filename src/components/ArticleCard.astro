@@ -5,11 +5,11 @@ interface Props {
   backgroundColor: string;
   title: string;
   description?: string;
-  date: string;
+  publishedDate: string;
   category: string;
 }
 
-const { backgroundColor, date, description, title, category } = Astro.props;
+const { backgroundColor, publishedDate, description, title, category } = Astro.props;
 ---
 
 <div
@@ -18,7 +18,7 @@ const { backgroundColor, date, description, title, category } = Astro.props;
 >
   <Chip text={category} />
 
-  <p>{date}</p>
+  <p>{publishedDate}</p>
 
   <h1 class="bounce text-2xl mb-4 heading font-semibold">{title}</h1>
 
